@@ -10,7 +10,6 @@
 #import "GJGCChatFriendDataSourceManager.h"
 
 @interface GJGCChatFriendViewController : GJGCChatDetailViewController <UIActionSheetDelegate>
-
 /* 
  *Click phone number
  */
