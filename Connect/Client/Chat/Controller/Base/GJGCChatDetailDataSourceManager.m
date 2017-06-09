@@ -280,7 +280,6 @@
 - (void)dispatchOptimzeRefresh {
     [GCDQueue executeInMainQueue:^{
         if (self.delegate && [self.delegate respondsToSelector:@selector(dataSourceManagerRequireUpdateListTable:)]) {
-
             [self.delegate dataSourceManagerRequireUpdateListTable:self];
         }
     }];
@@ -382,7 +381,6 @@
 }
 
 - (void)updateContentModelValuesNotEffectRowHeight:(GJGCChatContentBaseModel *)contentModel atIndex:(NSInteger)index {
-
     [self.chatListArray replaceObjectAtIndex:index withObject:contentModel];
 }
 
@@ -524,19 +522,12 @@
 
 - (void)resetFirstAndLastMsgId {
     if (self.chatListArray.count > 0) {
-
         GJGCChatContentBaseModel *firstMsgContent = [self.chatListArray firstObject];
-
         NSInteger nextMsgIndex = 0;
-
         while (firstMsgContent.isTimeSubModel) {
-
             nextMsgIndex++;
-
             firstMsgContent = [self.chatListArray objectAtIndex:nextMsgIndex];
-
         }
-
         self.lastFirstLocalMsgId = firstMsgContent.localMsgId;
     }
 }
@@ -554,10 +545,8 @@
         GJGCChatFriendContentModel *contentModel = [self.chatListArray objectAtIndex:i];
         NSString *timeString = [GJGCChatSystemNotiCellStyle timeAgoStringByLastMsgTime:contentModel.sendTime lastMsgTime:firstMsgTimeInterval];
         if (timeString) {
-
             /* Create a time block and insert it into the data source */
             firstMsgTimeInterval = contentModel.sendTime;
-
             GJGCChatFriendContentModel *timeSubModel = [GJGCChatFriendContentModel timeSubModel];
             timeSubModel.baseMessageType = GJGCChatBaseMessageTypeChatMessage;
             timeSubModel.contentType = GJGCChatFriendContentTypeTime;
@@ -566,26 +555,17 @@
             timeSubModel.contentHeight = [[contentHeightArray firstObject] floatValue];
             timeSubModel.sendTime = contentModel.sendTime;
             timeSubModel.timeSubMsgCount = 1;
-
             currentTimeSubModel = timeSubModel;
-
             contentModel.timeSubIdentifier = timeSubModel.uniqueIdentifier;
-
             [self.chatListArray replaceObjectAtIndex:i withObject:contentModel];
             [self.chatListArray objectInsert:timeSubModel atIndex:i];
-
             i++;
-
             [self.timeShowSubArray objectAddObject:timeSubModel];
-
         } else {
-
             contentModel.timeSubIdentifier = currentTimeSubModel.uniqueIdentifier;
             currentTimeSubModel.timeSubMsgCount = currentTimeSubModel.timeSubMsgCount + 1;
-
             [self updateContentModelByUniqueIdentifier:contentModel];
             [self updateContentModelByUniqueIdentifier:currentTimeSubModel];
-
         }
     }
 }
@@ -1056,7 +1036,7 @@
         !bmMessage) {
         return;
     }
-    if ([self checkRichtextUploadStatuts:bmMessage]) {
+    if ([LMMessageTool checkRichtextUploadStatuts:bmMessage]) {
         [self sendMessagePost:bmMessage];
     } else {
         //send message
@@ -1109,28 +1089,6 @@
     for (MMMessage *bmMessage in self.sendingMessages) {
         [self reSendMesssage:(GJGCChatFriendContentModel *) [self contentModelByMsgId:bmMessage.message_id]];
     }
-}
-
-- (BOOL)checkRichtextUploadStatuts:(MMMessage *)msg {
-    switch (msg.type) {
-        case GJGCChatFriendContentTypeAudio:
-        case GJGCChatFriendContentTypeImage:
-        case GJGCChatFriendContentTypeMapLocation:
-            if (msg.content) {
-                return YES;
-            }
-            break;
-
-        case GJGCChatFriendContentTypeVideo:
-            if (msg.content && msg.url) {
-                return YES;
-            }
-            break;
-        default:
-            return YES;
-            break;
-    }
-    return NO;
 }
 
 #pragma mark - add message model
@@ -1625,9 +1583,7 @@
 - (void)sendMessageReadAck:(ChatMessageInfo *)message {
 
     message.readTime = (long long int) ([[NSDate date] timeIntervalSince1970] * 1000);
-
     [[MessageDBManager sharedManager] updateMessageReadTimeWithMsgID:message.messageId messageOwer:self.taklInfo.chatIdendifier];
-
     if (![self.ignoreMessageTypes containsObject:@(message.messageType)]) {
         if (message.messageType == GJGCChatFriendContentTypeAudio || message.messageType == GJGCChatFriendContentTypeImage) {
             return;
@@ -1638,26 +1594,9 @@
     }
 }
 
-
 - (void)showEcdhKeyUpdataMessageWithSuccess:(BOOL)success {
 
-    return;
-    GJGCChatFriendContentModel *statusTipModel = [[GJGCChatFriendContentModel alloc] init];
-    statusTipModel.baseMessageType = GJGCChatBaseMessageTypeChatMessage;
-    statusTipModel.contentType = GJGCChatFriendContentTypeStatusTip;
-    statusTipModel.statusMessageString = [GJGCChatSystemNotiCellStyle formateEcdhkeyUpdateWithSuccess:success];
-    NSArray *contentHeightArray = [self heightForContentModel:statusTipModel];
-    statusTipModel.contentHeight = [[contentHeightArray firstObject] floatValue];
-    statusTipModel.sendTime = [[NSDate date] timeIntervalSince1970] * 1000;
-    statusTipModel.localMsgId = [ConnectTool generateMessageId];
-    [self addChatContentModel:statusTipModel];
-
-    self.lastSendMsgTime = [[NSDate date] timeIntervalSince1970] * 1000;
-    [GCDQueue executeInMainQueue:^{
-        dispatch_source_merge_data(_refreshListSource, 1);
-    }];
 }
-
 
 
 - (void)sendMessagePost:(MMMessage *)message {

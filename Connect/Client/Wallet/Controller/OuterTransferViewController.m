@@ -32,9 +32,10 @@
     [super viewDidLoad];
     self.title = LMLocalizedString(@"Wallet Transfer", nil);
     [self setWhitefBackArrowItem];
+    [self setRightBarButtonItem];
     [self creatView];
     [self.view addSubview:self.errorTipLabel];
-    [self setRightBarButtonItem];
+    
 }
 
 - (void)setRightBarButtonItem {
@@ -52,7 +53,7 @@
 
     self.titleLabel = [[UILabel alloc] init];
     self.titleLabel.font = [UIFont systemFontOfSize:FONT_SIZE(36)];
-    self.titleLabel.textColor = GJCFQuickHexColor(@"767A82");
+    self.titleLabel.textColor = LMBasicTextFieldeColor;
     _titleLabel.text = LMLocalizedString(@"Wallet Transfer via other APP messges", nil);
     _titleLabel.textAlignment = NSTextAlignmentCenter;
     [self.view addSubview:self.titleLabel];
@@ -96,16 +97,16 @@
 
 
     self.userBalanceLabel = [[UILabel alloc] init];
-    self.amount = [[NSDecimalNumber alloc] initWithLong:[[MMAppSetting sharedSetting] getBalance]];
-    self.userBalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance", nil), [PayTool getBtcStringWithAmount:[self.amount integerValue]]];
-    self.userBalanceLabel.textColor = [UIColor colorWithHexString:@"38425F"];
+    self.amount = [[NSDecimalNumber alloc] initWithLong:[[MMAppSetting sharedSetting] getAvaliableAmount]];
+    self.userBalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance Credit", nil), [PayTool getBtcStringWithAmount:[self.amount integerValue]]];
+    self.userBalanceLabel.textColor = LMBasicBlanceBtnTitleColor;
     self.userBalanceLabel.font = [UIFont systemFontOfSize:FONT_SIZE(28)];
     self.userBalanceLabel.textAlignment = NSTextAlignmentCenter;
     [self.view addSubview:self.userBalanceLabel];
     // Get wallet information
     [[PayTool sharedInstance] getBlanceWithComplete:^(NSString *blance, UnspentAmount *unspentAmount, NSError *error) {
         [GCDQueue executeInMainQueue:^{
-            weakSelf.userBalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance", nil), [PayTool getBtcStringWithAmount:unspentAmount.avaliableAmount]];
+            weakSelf.userBalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance Credit", nil), [PayTool getBtcStringWithAmount:unspentAmount.avaliableAmount]];
             weakSelf.amount = [[NSDecimalNumber alloc] initWithLong:unspentAmount.avaliableAmount];
         }];
     }];

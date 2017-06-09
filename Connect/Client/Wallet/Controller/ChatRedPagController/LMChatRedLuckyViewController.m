@@ -17,20 +17,24 @@
 #import "LMPayCheck.h"
 
 @interface LMChatRedLuckyViewController () <UITextFieldDelegate>
-@property(nonatomic, copy) NSString *reciverIdentifier;         // User address or group ID
-
-@property(nonatomic, strong) UILabel *BalanceLabel;     // Wallet balance
-
-@property(nonatomic, strong) UILabel *titleLabel;     // title label
-@property(nonatomic, strong) LMRedLuckyShowView *showView;       // Red envelope animation view
-@property(nonatomic, strong) UIImageView *avatarIcon;      // Avatar
-@property(nonatomic, strong) UILabel *nameLabel;       // name
-
-@property(nonatomic, strong) PaddingTextField *numField; // Number of red envelopes
-
-@property(nonatomic, strong) UIView *numberOfRedLuckyView; // Number of input boxes
-
-@property(nonatomic, strong) TransferInputView *inputAmountView; // view
+// User address or group ID
+@property(nonatomic, copy) NSString *reciverIdentifier;
+// Wallet balance
+@property(nonatomic, strong) UILabel *BalanceLabel;
+// title label
+@property(nonatomic, strong) UILabel *titleLabel;
+// Red envelope animation view
+@property(nonatomic, strong) LMRedLuckyShowView *showView;
+// Avatar
+@property(nonatomic, strong) UIImageView *avatarIcon;
+// name
+@property(nonatomic, strong) UILabel *nameLabel;
+// Number of red envelopes
+@property(nonatomic, strong) PaddingTextField *numField;
+// Number of input boxes
+@property(nonatomic, strong) UIView *numberOfRedLuckyView;
+// view
+@property(nonatomic, strong) TransferInputView *inputAmountView;
 // The value of uilable on numField
 @property(strong, nonatomic) UILabel *disPlayLable;
 
@@ -57,6 +61,15 @@
 
     [super viewDidLoad];
     NSString *navTitleString;
+    [self setUpUiWithStyle:navTitleString];
+    [self setUpRightButtomItem];
+    [self setUpElementsWithTransferView];
+    [self navigationConfigureWithTitleString:navTitleString];
+    [self initTabelViewCell];
+    self.ainfo = [[LKUserCenter shareCenter] currentLoginUser];
+}
+- (void)setUpUiWithStyle:(NSString *)navTitleString {
+    
     navTitleString = LMLocalizedString(@"Wallet Packet", nil);
     if (_style == LMChatRedLuckyStyleOutRedBag) {
         navTitleString = LMLocalizedString(@"Wallet Sent via link luck packet", nil);
@@ -72,13 +85,8 @@
     } else {
         [self setWhitefBackArrowItem];
     }
-    [self setUpRightButtomItem];
-    [self setUpElementsWithTransferView];
-    [self navigationConfigureWithTitleString:navTitleString];
-    [self initTabelViewCell];
-    self.ainfo = [[LKUserCenter shareCenter] currentLoginUser];
+ 
 }
-
 - (void)setUpRightButtomItem {
     self.navigationItem.rightBarButtonItems = nil;
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -187,7 +195,7 @@
     }];
 
 
-    self.inputAmountView.textDefaultAmount = MAX_REDMIN_AMOUNT;
+    self.inputAmountView.defaultAmountString = @"0.0001";
 }
 
 - (void)buildUpUserIcon {
@@ -202,7 +210,7 @@
     UILabel *name = [[UILabel alloc] initWithFrame:CGRectMake(0.f, 0.f, 50.f, 30.f)];
     [name setTextAlignment:NSTextAlignmentCenter];
     [name setFont:[UIFont systemFontOfSize:14.f]];
-    [name setTextColor:[UIColor colorWithHexString:@"161A21"]];
+    name.textColor = LMBasicBlack;
     [name setText:[NSString stringWithFormat:LMLocalizedString(@"Wallet Send Lucky Packet to", nil), _userInfo.username]];
     _nameLabel = name;
     [self.view addSubview:_nameLabel];
@@ -224,10 +232,21 @@
     self.title = title;
 }
 
+- (void)tapBalance{
+    if (![[MMAppSetting sharedSetting] canAutoCalculateTransactionFee]) {
+        long long maxAmount = self.blance - [[MMAppSetting sharedSetting] getTranferFee] * 2;
+        self.inputAmountView.defaultAmountString = [[[NSDecimalNumber alloc] initWithLongLong:maxAmount] decimalNumberByDividingBy:[[NSDecimalNumber alloc] initWithLongLong:pow(10, 8)]].stringValue;
+    }
+}
+
 - (void)initTabelViewCell {
     self.BalanceLabel = [[UILabel alloc] init];
-    self.BalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance", nil), [PayTool getBtcStringWithAmount:[[MMAppSetting sharedSetting] getBalance]]];
-    self.BalanceLabel.textColor = [UIColor colorWithHexString:@"38425F"];
+    self.BalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance Credit", nil), [PayTool getBtcStringWithAmount:[[MMAppSetting sharedSetting] getAvaliableAmount]]];
+    UITapGestureRecognizer *tapBalance = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapBalance)];
+    [self.BalanceLabel addGestureRecognizer:tapBalance];
+    self.BalanceLabel.userInteractionEnabled = YES;
+    
+    self.BalanceLabel.textColor = LMBasicBlanceBtnTitleColor;
     self.BalanceLabel.font = [UIFont systemFontOfSize:FONT_SIZE(28)];
     self.BalanceLabel.textAlignment = NSTextAlignmentCenter;
     self.BalanceLabel.backgroundColor = self.view.backgroundColor;
@@ -242,7 +261,7 @@
     __weak __typeof(&*self) weakSelf = self;
     [[PayTool sharedInstance] getBlanceWithComplete:^(NSString *blance, UnspentAmount *unspentAmount, NSError *error) {
         weakSelf.blance = unspentAmount.avaliableAmount;
-        weakSelf.BalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance", nil), [PayTool getBtcStringWithAmount:unspentAmount.avaliableAmount]];
+        weakSelf.BalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance Credit", nil), [PayTool getBtcStringWithAmount:unspentAmount.avaliableAmount]];
     }];
     self.comfrimButton = [[ConnectButton alloc] initWithNormalTitle:LMLocalizedString(@"Wallet Prepare Lucky Packet", nil) disableTitle:LMLocalizedString(@"Wallet Prepare Lucky Packet", nil)];
     [self.comfrimButton addTarget:self action:@selector(tapConfrim) forControlEvents:UIControlEventTouchUpInside];
@@ -507,14 +526,6 @@
         if (data) {
             NSError *error = nil;
             RedPackage *redPackge = [RedPackage parseFromData:data error:&error];
-            // update balance
-            [[PayTool sharedInstance] getBlanceWithComplete:^(NSString *blance, UnspentAmount *unspentAmount, NSError *error) {
-                [GCDQueue executeInMainQueue:^{
-                    weakSelf.blance = unspentAmount.avaliableAmount;
-                    weakSelf.BalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance", nil), [PayTool getBtcStringWithAmount:unspentAmount.avaliableAmount]];
-                }];
-            }];
-            
             switch (type) {
                 case 0: {
                     [GCDQueue executeInMainQueue:^{

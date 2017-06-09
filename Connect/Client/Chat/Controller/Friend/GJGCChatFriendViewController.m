@@ -825,10 +825,7 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
 
 - (void)chatCellDidTapOnHeadView:(GJGCChatBaseCell *)tapedCell {
     NSIndexPath *tapIndexPath = [self.chatListTable indexPathForCell:tapedCell];
-
     GJGCChatFriendContentModel *chatContentModel = (GJGCChatFriendContentModel *) [self.dataSourceManager contentModelAtIndex:tapIndexPath.row];
-
-
     if (chatContentModel.isFromSelf) {
 
     } else {
@@ -839,6 +836,7 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
                     info = [[UserDBManager sharedManager] getUserByAddress:groupUser.address];
                     if (!info) {
                         info = groupUser;
+                        info.stranger = YES;
                     }
                     break;
                 }
@@ -852,7 +850,6 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
         if (!info) {
             return;
         }
-
         if (!info.stranger) {
             if (self.taklInfo.talkType == GJGCChatFriendTalkTypePostSystem) {
                 return;
@@ -966,7 +963,9 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
             [MBProgressHUD hideHUDForView:self.view];
         }];
         if (error) {
-
+            [GCDQueue executeInMainQueue:^{
+                [MBProgressHUD showToastwithText:LMLocalizedString(@"Chat Network connection failed please check network", nil) withType:ToastTypeFail showInView:self.view complete:nil];
+            }];
         } else {
             switch (response.status) {
                 case 0://fail
@@ -2150,7 +2149,6 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
             }
         }
     }
-
     [self.noteGroupMembers removeAllObjects];
     [self.dataSourceManager sendMesssage:chatContentModel];
 }
@@ -2351,7 +2349,6 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
             @"filePath": filePath,
             @"videoSize": videoSize};
     GJGCChatFriendContentModel *chatContentModel = [LMMessageTool packContentModelWithTalkModel:self.taklInfo contentType:GJGCChatFriendContentTypeVideo extData:dataDict];
-
     [self.dataSourceManager sendMesssage:chatContentModel];
 }
 
@@ -2392,13 +2389,11 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
     transactionModel.note = tips;
     transactionModel.hashId = hashId;
     GJGCChatFriendContentModel *chatContentModel = [LMMessageTool packContentModelWithTalkModel:self.taklInfo contentType:GJGCChatFriendContentTypeRedEnvelope extData:transactionModel];
-
     [self.dataSourceManager sendMesssage:chatContentModel];
 }
 
 - (void)sendLocation:(NSDictionary *)locationInfo {
     GJGCChatFriendContentModel *chatContentModel = [LMMessageTool packContentModelWithTalkModel:self.taklInfo contentType:GJGCChatFriendContentTypeMapLocation extData:locationInfo];
-
     [self.dataSourceManager sendMesssage:chatContentModel];
 }
 
@@ -2480,9 +2475,7 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
     transactionModel.size = totalMember;
     transactionModel.hashId = transactionID;
     transactionModel.amount = amount;
-
     GJGCChatFriendContentModel *chatContentModel = [LMMessageTool packContentModelWithTalkModel:self.taklInfo contentType:GJGCChatFriendContentTypePayReceipt extData:transactionModel];
-
     //save trancation status
     [GCDQueue executeInGlobalQueue:^{
         NSMutableDictionary *dict = [NSMutableDictionary dictionary];
@@ -2497,8 +2490,6 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
         }
         [[LMMessageExtendManager sharedManager] saveBitchMessageExtendDict:dict];
     }];
-
-
     [self.dataSourceManager sendMesssage:chatContentModel];
 }
 
