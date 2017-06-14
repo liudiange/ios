@@ -7,10 +7,9 @@
 //
 
 #import "SetUserInfoPage.h"
-
 #import "StringTool.h"
 #import "ConnectButton.h"
-
+#import "LMIMHelper.h"
 #import "NetWorkOperationTool.h"
 #import "BottomLineTextField.h"
 #import "YYImageCache.h"
@@ -101,17 +100,17 @@
     [super viewDidLoad];
     [self setNavigationTitleImage:@"logo_black_small"];
     [self setBlackfBackArrowItem];
-    NSData *randomData = [KeyHandle createRandom512bits];
+    NSData *randomData = [LMIMHelper createRandom512bits];
     self.commonRandomStr = [StringTool hexStringFromData:randomData];
     // or
     NSString *random = [StringTool pinxCreator:self.commonRandomStr withPinv:self.randomStrBySound];
     DDLogInfo(@"random :%@ length:%lu", random, (unsigned long) random.length);
     if (self.prikey.length <= 0) {
         // Generates a private key from a random number
-        self.prikey = [KeyHandle creatNewPrivkeyByRandomStr:random];
+        self.prikey = [LMIMHelper creatNewPrivkeyByRandom:random];
     }
-    self.pubKey = [KeyHandle createPubkeyByPrikey:_prikey];
-    self.address = [KeyHandle getAddressByPubkey:_pubKey];
+    self.pubKey = [LMIMHelper getPubkeyByPrikey:self.prikey];
+    self.address = [LMIMHelper getAddressByPubkey:self.pubKey];
 }
 
 - (void)dealloc {
@@ -432,7 +431,7 @@
     }
     _nickNameFiled.text = [StringTool filterStr:_nickNameFiled.text];
     // Encrypt private key string
-    self.encryptionPrikey = [KeyHandle getEncodePrikey:_prikey withBitAddress:_address password:_passwordField.text];
+    self.encryptionPrikey = [LMIMHelper encodeWithPrikey:_prikey address:_address password:_passwordField.text];
     RegisterUser *regisUser = [[RegisterUser alloc] init];
     regisUser.avatar = self.avatar;
     regisUser.username = _nickNameFiled.text;

@@ -9,13 +9,13 @@
 #import "NetWorkOperationTool.h"
 #import "AppDelegate.h"
 #import "NSString+Hash.h"
-#import "KeyHandle.h"
+#import "LMIMHelper.h"
 #import "Protofile.pbobjc.h"
 #import "NetWorkTool.h"
 #import "SingleAFNetworkManager.h"
 #import "ConnectTool.h"
 #import "StringTool.h"
-#import "Protofile.pbobjc.h"
+#import "LMIMHelper.h"
 #import "LMBaseSSDBManager.h"
 
 
@@ -272,10 +272,10 @@
 }
 
 + (void)POSTWithUrlString:(NSString *)url postProtoData:(NSData *)postData pirkey:(NSString *)privkey publickey:(NSString *)publickey complete:(NetWorkOperationSuccess)success fail:(NetWorkOperationFail)fail{
-    NSData *ecdhkey = [KeyHandle getECDHkeyWithPrivkey:privkey publicKey:[[ServerCenter shareCenter] getCurrentServer].data.pub_key];
+    NSData *ecdhkey = [LMIMHelper getECDHkeyWithPrivkey:privkey publicKey:[[ServerCenter shareCenter] getCurrentServer].data.pub_key];
     
     NSData *salt = salt = [ConnectTool get64ZeroData];
-    ecdhkey = [KeyHandle getAes256KeyByECDHKeyAndSalt:ecdhkey salt:salt];
+    ecdhkey = [LMIMHelper getAes256KeyByECDHKeyAndSalt:ecdhkey salt:salt];
     if (!postData) {
         postData = [ConnectTool get16_32RandData];
     }
@@ -286,8 +286,8 @@
 
 
 + (void)POSTWithUrlString:(NSString *)url postProtoData:(NSData *)postData NotSignComplete:(NetWorkOperationSuccess)success fail:(NetWorkOperationFail)fail{
-    NSData *ecdhkey = [KeyHandle getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey publicKey:[[ServerCenter shareCenter] getCurrentServer].data.pub_key];
-    ecdhkey = [KeyHandle getAes256KeyByECDHKeyAndSalt:ecdhkey salt:[ServerCenter shareCenter].httpTokenSalt];
+    NSData *ecdhkey = [LMIMHelper getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey publicKey:[[ServerCenter shareCenter] getCurrentServer].data.pub_key];
+    ecdhkey = [LMIMHelper getAes256KeyByECDHKeyAndSalt:ecdhkey salt:[ServerCenter shareCenter].httpTokenSalt];
     if (!postData) {
         postData = [ConnectTool get16_32RandData];
     }
@@ -297,8 +297,8 @@
 
 + (void)POSTWithUrlString:(NSString *)url postProtoData:(NSData *)postData complete:(NetWorkOperationSuccess)success fail:(NetWorkOperationFail)fail{
 
-    NSData *ecdhkey = [KeyHandle getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey publicKey:[[ServerCenter shareCenter] getCurrentServer].data.pub_key];
-    ecdhkey = [KeyHandle getAes256KeyByECDHKeyAndSalt:ecdhkey salt:[ServerCenter shareCenter].httpTokenSalt];
+    NSData *ecdhkey = [LMIMHelper getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey publicKey:[[ServerCenter shareCenter] getCurrentServer].data.pub_key];
+    ecdhkey = [LMIMHelper getAes256KeyByECDHKeyAndSalt:ecdhkey salt:[ServerCenter shareCenter].httpTokenSalt];
     
     if (!postData) {
         postData = [ConnectTool get16_32RandData];
@@ -310,8 +310,8 @@
 
 + (void)POSTWithUrlString:(NSString *)url postNoStrutDataProtoData:(NSData *)postData complete:(NetWorkOperationSuccess)success fail:(NetWorkOperationFail)fail{
     
-    NSData *ecdhkey = [KeyHandle getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey publicKey:[[ServerCenter shareCenter] getCurrentServer].data.pub_key];
-    ecdhkey = [KeyHandle getAes256KeyByECDHKeyAndSalt:ecdhkey salt:[ServerCenter shareCenter].httpTokenSalt];
+    NSData *ecdhkey = [LMIMHelper getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey publicKey:[[ServerCenter shareCenter] getCurrentServer].data.pub_key];
+    ecdhkey = [LMIMHelper getAes256KeyByECDHKeyAndSalt:ecdhkey salt:[ServerCenter shareCenter].httpTokenSalt];
     if (!postData) {
         postData = [ConnectTool get16_32RandData];
     }
@@ -324,17 +324,17 @@
 
 + (void)POSTWithUrlString:(NSString *)url postProtoData:(NSData *)postData withPrivkey:(NSString *)privkey complete:(NetWorkOperationSuccess)success fail:(NetWorkOperationFail)fail{
     
-    NSData *ecdhkey = [KeyHandle getECDHkeyWithPrivkey:privkey publicKey:[[ServerCenter shareCenter] getCurrentServer].data.pub_key];
+    NSData *ecdhkey = [LMIMHelper getECDHkeyWithPrivkey:privkey publicKey:[[ServerCenter shareCenter] getCurrentServer].data.pub_key];
     NSData *salt = nil;
     if ([privkey isEqualToString:[[LKUserCenter shareCenter] currentLoginUser].prikey]) {
         salt = [ServerCenter shareCenter].httpTokenSalt;
     }
-    ecdhkey = [KeyHandle getAes256KeyByECDHKeyAndSalt:ecdhkey salt:salt];
+    ecdhkey = [LMIMHelper getAes256KeyByECDHKeyAndSalt:ecdhkey salt:salt];
     if (!postData) {
         postData = [ConnectTool get16_32RandData];
     }
     GcmData *gcmData = [ConnectTool createGcmDataWithEcdhkey:ecdhkey data:[ConnectTool createStructDataWithData:postData] aad:[ServerCenter shareCenter].defineAad];
-    IMRequest *imRequest = [ConnectTool createRequestWithData:gcmData privkey:privkey publickKey:[KeyHandle createPubkeyByPrikey:privkey]];
+    IMRequest *imRequest = [ConnectTool createRequestWithData:gcmData privkey:privkey publickKey:[LMIMHelper getPubkeyByPrikey:privkey]];
     
     [self POSTWithUrlString:url postData:imRequest.data complete:success fail:fail];
 }
@@ -374,11 +374,11 @@
                 forceUpdate:(BOOL)forceUpdate{
     if (forceUpdate) {
         GenerateToken *token = [GenerateToken new];
-        token.salt = [KeyHandle createRandom512bits];
+        token.salt = [LMIMHelper createRandom512bits];
         [self getServerToken:token complete:complete];
     } else{
         GenerateToken *token = [GenerateToken new];
-        token.salt = [KeyHandle createRandom512bits];
+        token.salt = [LMIMHelper createRandom512bits];
         [self getServerToken:token complete:complete];
         return;
         
@@ -386,7 +386,7 @@
         NSString *saltHex = GJCFUDFGetValue([[LKUserCenter shareCenter] currentLoginUser].pub_key);
         if (GJCFStringIsNull(saltHex)) {
             GenerateToken *token = [GenerateToken new];
-            token.salt = [KeyHandle createRandom512bits];
+            token.salt = [LMIMHelper createRandom512bits];
             [self getServerToken:token complete:complete];
         } else{
             NSData *data = [ConnectTool decodeGcmDataWithGcmData:[GcmData parseFromData:[StringTool hexStringToData:saltHex] error:nil] publickey:[[LKUserCenter shareCenter] currentLoginUser].pub_key];
@@ -394,7 +394,7 @@
             // timeout
             if (resPonse.expired < [[NSDate date] timeIntervalSince1970] + 400) {
                 GenerateToken *token = [GenerateToken new];
-                token.salt = [KeyHandle createRandom512bits];
+                token.salt = [LMIMHelper createRandom512bits];
                 [self getServerToken:token complete:complete];
             } else{
                 [ServerCenter shareCenter].httpTokenSalt = resPonse.salt;
@@ -404,8 +404,8 @@
 }
 
 + (void)getServerToken:(GenerateToken *)token complete:(void (^)(NSData *salt,NSError *error))complete{
-    NSData *ecdhkey = [KeyHandle getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey publicKey:[[ServerCenter shareCenter] getCurrentServer].data.pub_key];
-    ecdhkey = [KeyHandle getAes256KeyByECDHKeyAndSalt:ecdhkey salt:[ConnectTool get64ZeroData]];
+    NSData *ecdhkey = [LMIMHelper getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey publicKey:[[ServerCenter shareCenter] getCurrentServer].data.pub_key];
+    ecdhkey = [LMIMHelper getAes256KeyByECDHKeyAndSalt:ecdhkey salt:[ConnectTool get64ZeroData]];
     IMRequest *imRequest = [ConnectTool createRequestWithEcdhKey:ecdhkey data:token.data aad:[ServerCenter shareCenter].defineAad];
     [self POSTWithUrlString:getRandomSaltUrl postData:imRequest.data complete:^(id response) {
         HttpResponse *hResponse = (HttpResponse *)response;
@@ -443,8 +443,8 @@
 
 
 + (void)checkSaltExpired{
-    NSData *ecdhkey = [KeyHandle getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey publicKey:[[ServerCenter shareCenter] getCurrentServer].data.pub_key];
-    ecdhkey = [KeyHandle getAes256KeyByECDHKeyAndSalt:ecdhkey salt:[ServerCenter shareCenter].httpTokenSalt];
+    NSData *ecdhkey = [LMIMHelper getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey publicKey:[[ServerCenter shareCenter] getCurrentServer].data.pub_key];
+    ecdhkey = [LMIMHelper getAes256KeyByECDHKeyAndSalt:ecdhkey salt:[ServerCenter shareCenter].httpTokenSalt];
     IMRequest *imRequest = [ConnectTool createRequestWithEcdhKey:ecdhkey data:nil aad:[ServerCenter shareCenter].defineAad];
     [self POSTWithUrlString:checkSaltExpiredUrl postData:imRequest.data complete:^(id response) {
         HttpResponse *hResponse = (HttpResponse *)response;
@@ -455,7 +455,7 @@
             [ServerCenter shareCenter].saltDeadTime = serverToken.expired + [[NSDate date] timeIntervalSince1970];
             if (serverToken.expired < 400) { // Regain salt
                 GenerateToken *token = [GenerateToken new];
-                token.salt = [KeyHandle createRandom512bits];
+                token.salt = [LMIMHelper createRandom512bits];
                 [self getServerToken:token complete:nil];
             }
         }

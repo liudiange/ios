@@ -11,6 +11,7 @@
 #import "ConnectButton.h"
 #import "LocalUserInfoView.h"
 #import "NetWorkOperationTool.h"
+#import "LMIMHelper.h"
 
 
 @interface RegisteredPrivkeyLoginPage () <UITextFieldDelegate>
@@ -278,7 +279,7 @@
     __weak typeof(self) weakSelf = self;
     UserPrivateSign *privateSign = [[UserPrivateSign alloc] init];
     privateSign.token = self.userToken.token;
-    NSString *encodePrivkey = [KeyHandle getEncodePrikey:self.privteKey withBitAddress:self.loginUser.address password:self.passwordField.text];
+    NSString *encodePrivkey = [LMIMHelper encodeWithPrikey:self.privteKey address:self.loginUser.address password:self.passwordField.text];
     self.loginUser.encryption_pri = encodePrivkey;
     privateSign.encryptionPri = encodePrivkey;
     privateSign.passwordHint = self.loginUser.password_hint;

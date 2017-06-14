@@ -9,7 +9,7 @@
 #import "WallteNetWorkTool.h"
 #import "Protofile.pbobjc.h"
 #import "UnSpentInfo.h"
-#import "KeyHandle.h"
+#import "LMIMHelper.h"
 #import "NetWorkOperationTool.h"
 #import "ConnectTool.h"
 #import "UIAlertController+Blocks.h"
@@ -32,7 +32,7 @@
     }
     
     // Verify the legitimacy of the input
-    if (GJCFStringIsNull(address) || ![KeyHandle checkAddress:address]) {
+    if (GJCFStringIsNull(address) || ![LMIMHelper checkAddress:address]) {
         if (complete) {
             complete(nil,nil,[NSError errorWithDomain:@"Payment address is not valid" code:2617 userInfo:nil]);
         }
@@ -53,7 +53,7 @@
     }
     
     for (NSString *address in toAddresses) {
-        if (![KeyHandle checkAddress:address]) {
+        if (![LMIMHelper checkAddress:address]) {
             if (complete) {
                 complete(nil,nil,[NSError errorWithDomain:@"Collection address is not valid" code:-1 userInfo:nil]);
             }
@@ -132,7 +132,7 @@
                    toAddress:(NSArray *)toAddresses
 createRawTranscationModelComplete:(void (^)(UnspentOrderResponse *unspent,NSError *error))complete{
     // Verify the legitimacy of the input
-    if (GJCFStringIsNull(address) || ![KeyHandle checkAddress:address]) {
+    if (GJCFStringIsNull(address) || ![LMIMHelper checkAddress:address]) {
         if (complete) {
             complete(nil,[NSError errorWithDomain:@"Payment address is not valid" code:2617 userInfo:nil]);
         }
@@ -149,7 +149,7 @@ createRawTranscationModelComplete:(void (^)(UnspentOrderResponse *unspent,NSErro
         return;
     }
     for (NSDictionary *temD in toAddresses) {
-        if (![KeyHandle checkAddress:[temD valueForKey:@"address"]]) {
+        if (![LMIMHelper checkAddress:[temD valueForKey:@"address"]]) {
             if (complete) {
                 complete(nil,[NSError errorWithDomain:@"Collection address is not valid" code:2617 userInfo:nil]);
             }
@@ -215,7 +215,7 @@ createRawTranscationComplete:(void (^)(NSArray *vtsArray, NSString *rawTransacti
     
     
     // Verify the legitimacy of the input
-    if (GJCFStringIsNull(address) || ![KeyHandle checkAddress:address]) {
+    if (GJCFStringIsNull(address) || ![LMIMHelper checkAddress:address]) {
         if (complete) {
             complete(nil,nil,@"Payment address is not valid");
         }
@@ -236,7 +236,7 @@ createRawTranscationComplete:(void (^)(NSArray *vtsArray, NSString *rawTransacti
     }
     
     for (NSDictionary *temD in toAddresses) {
-        if (![KeyHandle checkAddress:[temD valueForKey:@"address"]]) {
+        if (![LMIMHelper checkAddress:[temD valueForKey:@"address"]]) {
             if (complete) {
                 complete(nil,nil,@"Collection address is not valid");
             }
@@ -370,7 +370,7 @@ createRawTranscationComplete:(void (^)(NSArray *vtsArray, NSString *rawTransacti
     // Verify the legitimacy of the input
     for (NSString *address in addresses) {
         
-        if (GJCFStringIsNull(address) || ![KeyHandle checkAddress:address]) {
+        if (GJCFStringIsNull(address) || ![LMIMHelper checkAddress:address]) {
             if (complete) {
                 complete(nil,nil,@"Payment address is not valid");
             }
@@ -393,7 +393,7 @@ createRawTranscationComplete:(void (^)(NSArray *vtsArray, NSString *rawTransacti
     }
     
     for (NSDictionary *temD in toAddresses) {
-        if (![KeyHandle checkAddress:[temD valueForKey:@"address"]]) {
+        if (![LMIMHelper checkAddress:[temD valueForKey:@"address"]]) {
             if (complete) {
                 complete(nil,nil,@"Collection address is not valid");
             }
@@ -565,7 +565,7 @@ createRawTranscationComplete:(void (^)(NSArray *vtsArray, NSString *rawTransacti
     
     
     // Verify the legitimacy of the input
-    if (GJCFStringIsNull(address) || ![KeyHandle checkAddress:address]) {
+    if (GJCFStringIsNull(address) || ![LMIMHelper checkAddress:address]) {
         if (complete) {
             complete(nil,0,@"Payment address is not valid");
         }
@@ -614,7 +614,7 @@ createRawTranscationComplete:(void (^)(NSArray *vtsArray, NSString *rawTransacti
     
     
     // Verify the legitimacy of the input
-    if (GJCFStringIsNull(address) || ![KeyHandle checkAddress:address]) {
+    if (GJCFStringIsNull(address) || ![LMIMHelper checkAddress:address]) {
         if (complete) {
             complete(nil,nil);
         }
@@ -987,7 +987,5 @@ createRawTranscationModelComplete:^(UnspentOrderResponse *unspent, NSError *erro
         }
     }];
 }
-
-
 
 @end

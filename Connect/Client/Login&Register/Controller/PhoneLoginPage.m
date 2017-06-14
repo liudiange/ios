@@ -70,12 +70,10 @@
 
 - (void)setup {
 
-
     UIImageView *logoImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"logo_black_middle"]];
     [self.view addSubview:logoImageView];
     logoImageView.frame = AUTO_RECT(0, 210, 300, 73);
     logoImageView.centerX = self.view.centerX;
-
 
     self.coutryLocalCode = [RegexKit countryCode];
     NSNumber *countryPhoneCode = [RegexKit phoneCode];

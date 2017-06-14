@@ -23,6 +23,7 @@
 #import "LocalAccountLoginPage.h"
 #import "SetUserInfoPage.h"
 #import "RegisteredPrivkeyLoginPage.h"
+#import "LMIMHelper.h"
 
 #define BIT_COIN_STR @"bitcoin:"
 #define AMOUNT_TIP  @"?amount"
@@ -127,9 +128,9 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
  */
 - (void)NoEncryptionAction:(NSString *)resultStr withVc:(UIViewController *)controller {
     
-    if ([KeyHandle checkPrivkey:resultStr]) {
+    if ([LMIMHelper checkPrivkey:resultStr]) {
         [MBProgressHUD showLoadingMessageToView:controller.view];
-        [NetWorkOperationTool POSTWithUrlString:PrivkeyLoginExistedUrl postProtoData:nil pirkey:resultStr publickey:[KeyHandle createPubkeyByPrikey:resultStr] complete:^(id response) {
+        [NetWorkOperationTool POSTWithUrlString:PrivkeyLoginExistedUrl postProtoData:nil pirkey:resultStr publickey:[LMIMHelper getPubkeyByPrikey:resultStr] complete:^(id response) {
             [GCDQueue executeInMainQueue:^{
                 [MBProgressHUD hideHUDForView:controller.view];
             }];
@@ -267,7 +268,7 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
         
     }
 
-    if (![KeyHandle checkAddress:self.resultContent]) {
+    if (![LMIMHelper checkAddress:self.resultContent]) {
         
         [MBProgressHUD hideHUDForView:self.controller.view];
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:LMLocalizedString(@"Wallet Result is not a bitcoin address", nil) message:LMLocalizedString(@"Login Please check that your input is correct", nil) preferredStyle:UIAlertControllerStyleAlert];
@@ -407,7 +408,7 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
         [self handWalletWithKeyWord:resultStr];
         
     }else {
-        if (![KeyHandle checkAddress:resultStr]) {
+        if (![LMIMHelper checkAddress:resultStr]) {
             
             [MBProgressHUD hideHUDForView:self.controller.view];
             UIAlertController *alertController = [UIAlertController alertControllerWithTitle:LMLocalizedString(@"Wallet Result is not a bitcoin address", nil) message:LMLocalizedString(@"Login Please check that your input is correct", nil) preferredStyle:UIAlertControllerStyleAlert];

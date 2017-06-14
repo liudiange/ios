@@ -53,6 +53,7 @@
 #import "LMSetMoneyResultViewController.h"
 #import "LMUnSetMoneyResultViewController.h"
 #import "LMMessageTool.h"
+#import "LMIMHelper.h"
 
 #define GJGCActionSheetCallPhoneNumberTag 132134
 
@@ -410,10 +411,10 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
                 if (self.taklInfo.talkType == GJGCChatFriendTalkTypeGroup) {
                     ecdhkey = [StringTool hexStringToData:self.taklInfo.chatGroupInfo.groupEcdhKey];
                 } else if (self.taklInfo.talkType == GJGCChatFriendTalkTypePrivate) {
-                    ecdhkey = [KeyHandle getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey
+                    ecdhkey = [LMIMHelper getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey
                                                      publicKey:self.taklInfo.chatIdendifier];
                 }
-                ecdhkey = [KeyHandle getAes256KeyByECDHKeyAndSalt:ecdhkey salt:[ConnectTool get64ZeroData]];
+                ecdhkey = [LMIMHelper getAes256KeyByECDHKeyAndSalt:ecdhkey salt:[ConnectTool get64ZeroData]];
                 downloadTask.ecdhkey = ecdhkey;
             }
             downloadTask.userInfo = @{@"type": @"audio",
@@ -785,7 +786,7 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
     [self cancelDownloadAtIndexPath:tapIndexPath];
 
     [self stopPlayCurrentAudio];
-    [ChatMessageFileManager deleteRecentChatMessageFileByMessageID:contentModel.localMsgId Address:[KeyHandle getAddressByPubkey:self.taklInfo.chatIdendifier]];
+    [ChatMessageFileManager deleteRecentChatMessageFileByMessageID:contentModel.localMsgId Address:[LMIMHelper getAddressByPubkey:self.taklInfo.chatIdendifier]];
     [[MessageDBManager sharedManager] deleteMessageByMessageId:contentModel.localMsgId messageOwer:self.taklInfo.chatIdendifier];
 
     NSArray *willDeletePaths = [self.dataSourceManager deleteMessageAtIndex:tapIndexPath.row];
@@ -1422,7 +1423,7 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
             if ([url valueForParameter:@"amount"]) {
                 decimalAmount = [NSDecimalNumber decimalNumberWithString:[url valueForParameter:@"amount"]];
             }
-            if (GJCFStringIsNull(address) || decimalAmount.doubleValue < 0 || ![KeyHandle checkAddress:address]) {
+            if (GJCFStringIsNull(address) || decimalAmount.doubleValue < 0 || ![LMIMHelper checkAddress:address]) {
                 [MBProgressHUD showToastwithText:LMLocalizedString(@"ErrorCode data error", nil) withType:ToastTypeFail showInView:self.view complete:nil];
                 return;
             }
@@ -1631,10 +1632,10 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
         if (self.taklInfo.talkType == GJGCChatFriendTalkTypeGroup) {
             ecdhkey = [StringTool hexStringToData:self.taklInfo.chatGroupInfo.groupEcdhKey];
         } else if (self.taklInfo.talkType == GJGCChatFriendTalkTypePrivate) {
-            ecdhkey = [KeyHandle getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey
+            ecdhkey = [LMIMHelper getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey
                                              publicKey:self.taklInfo.chatIdendifier];
         }
-        ecdhkey = [KeyHandle getAes256KeyByECDHKeyAndSalt:ecdhkey salt:[ConnectTool get64ZeroData]];
+        ecdhkey = [LMIMHelper getAes256KeyByECDHKeyAndSalt:ecdhkey salt:[ConnectTool get64ZeroData]];
         downloadTask.ecdhkey = ecdhkey;
     }
 
@@ -1658,10 +1659,10 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
     if (self.taklInfo.talkType == GJGCChatFriendTalkTypeGroup) {
         ecdhkey = [StringTool hexStringToData:self.taklInfo.chatGroupInfo.groupEcdhKey];
     } else if (self.taklInfo.talkType == GJGCChatFriendTalkTypePrivate) {
-        ecdhkey = [KeyHandle getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey
+        ecdhkey = [LMIMHelper getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey
                                          publicKey:self.taklInfo.chatIdendifier];
     }
-    ecdhkey = [KeyHandle getAes256KeyByECDHKeyAndSalt:ecdhkey salt:[ConnectTool get64ZeroData]];
+    ecdhkey = [LMIMHelper getAes256KeyByECDHKeyAndSalt:ecdhkey salt:[ConnectTool get64ZeroData]];
     downloadTask.ecdhkey = ecdhkey;
 
     downloadTask.userInfo = @{@"type": @"video"};
@@ -1787,10 +1788,10 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
                         if (self.taklInfo.talkType == GJGCChatFriendTalkTypeGroup) {
                             ecdhkey = [StringTool hexStringToData:self.taklInfo.chatGroupInfo.groupEcdhKey];
                         } else if (self.taklInfo.talkType == GJGCChatFriendTalkTypePrivate) {
-                            ecdhkey = [KeyHandle getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey
+                            ecdhkey = [LMIMHelper getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey
                                                              publicKey:self.taklInfo.chatIdendifier];
                         }
-                        ecdhkey = [KeyHandle getAes256KeyByECDHKeyAndSalt:ecdhkey salt:[ConnectTool get64ZeroData]];
+                        ecdhkey = [LMIMHelper getAes256KeyByECDHKeyAndSalt:ecdhkey salt:[ConnectTool get64ZeroData]];
                         downloadTask.ecdhkey = ecdhkey;
 
                     }
@@ -1813,10 +1814,10 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
                         if (self.taklInfo.talkType == GJGCChatFriendTalkTypeGroup) {
                             ecdhkey = [StringTool hexStringToData:self.taklInfo.chatGroupInfo.groupEcdhKey];
                         } else if (self.taklInfo.talkType == GJGCChatFriendTalkTypePrivate) {
-                            ecdhkey = [KeyHandle getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey
+                            ecdhkey = [LMIMHelper getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey
                                                              publicKey:self.taklInfo.chatIdendifier];
                         }
-                        ecdhkey = [KeyHandle getAes256KeyByECDHKeyAndSalt:ecdhkey salt:[ConnectTool get64ZeroData]];
+                        ecdhkey = [LMIMHelper getAes256KeyByECDHKeyAndSalt:ecdhkey salt:[ConnectTool get64ZeroData]];
                         downloadOriginTask.ecdhkey = ecdhkey;
 
                     }
@@ -1841,10 +1842,10 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
             if (self.taklInfo.talkType == GJGCChatFriendTalkTypeGroup) {
                 ecdhkey = [StringTool hexStringToData:self.taklInfo.chatGroupInfo.groupEcdhKey];
             } else if (self.taklInfo.talkType == GJGCChatFriendTalkTypePrivate) {
-                ecdhkey = [KeyHandle getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey
+                ecdhkey = [LMIMHelper getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey
                                                  publicKey:self.taklInfo.chatIdendifier];
             }
-            ecdhkey = [KeyHandle getAes256KeyByECDHKeyAndSalt:ecdhkey salt:[ConnectTool get64ZeroData]];
+            ecdhkey = [LMIMHelper getAes256KeyByECDHKeyAndSalt:ecdhkey salt:[ConnectTool get64ZeroData]];
             downloadTask.ecdhkey = ecdhkey;
 
             downloadTask.userInfo = @{@"type": @"locationimage"};
@@ -1867,10 +1868,10 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
             if (self.taklInfo.talkType == GJGCChatFriendTalkTypeGroup) {
                 ecdhkey = [StringTool hexStringToData:self.taklInfo.chatGroupInfo.groupEcdhKey];
             } else if (self.taklInfo.talkType == GJGCChatFriendTalkTypePrivate) {
-                ecdhkey = [KeyHandle getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey
+                ecdhkey = [LMIMHelper getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey
                                                  publicKey:self.taklInfo.chatIdendifier];
             }
-            ecdhkey = [KeyHandle getAes256KeyByECDHKeyAndSalt:ecdhkey salt:[ConnectTool get64ZeroData]];
+            ecdhkey = [LMIMHelper getAes256KeyByECDHKeyAndSalt:ecdhkey salt:[ConnectTool get64ZeroData]];
             downloadTask.ecdhkey = ecdhkey;
 
             downloadTask.userInfo = @{@"type": @"videocover"};

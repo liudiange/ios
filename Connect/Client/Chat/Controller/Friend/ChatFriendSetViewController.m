@@ -18,6 +18,7 @@
 #import "MessageDBManager.h"
 #import "StringTool.h"
 #import "AppDelegate.h"
+#import "LMIMHelper.h"
 
 @interface ChatFriendSetViewController ()
 
@@ -214,7 +215,7 @@
     AccountInfo *loginUser = [[LKUserCenter shareCenter] currentLoginUser];
     [groupName appendString:[NSString stringWithFormat:LMLocalizedString(@"Link user friends", nil), loginUser.username]];
     //generate group ecdhkey
-    self.groupEcdhKey = [KeyHandle getECDHkeyUsePrivkey:[KeyHandle creatNewPrivkey] PublicKey:[KeyHandle createPubkeyByPrikey:[KeyHandle creatNewPrivkey]]];
+    self.groupEcdhKey = [LMIMHelper getECDHkeyUsePrivkey:[LMIMHelper creatNewPrivkey] PublicKey:[LMIMHelper getPubkeyByPrikey:[LMIMHelper creatNewPrivkey]]];
 
     CreateGroupMessage *groupMessage = [[CreateGroupMessage alloc] init];
     groupMessage.secretKey = self.groupEcdhKey;

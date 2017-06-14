@@ -11,6 +11,7 @@
 #import "NSData+Hash.h"
 #import "MMMessage.h"
 #import "LMHistoryCacheManager.h"
+#import "LMIMHelper.h"
 
 @implementation ConnectTool
 
@@ -28,12 +29,12 @@
     NSString *iv = [[NSString stringWithFormat:@"%d",arc4random() % 100 + 1000] sha1String];
     NSDictionary *userToUserDict = nil;
     if ([data isKindOfClass:[NSString class]]) {
-        userToUserDict = [KeyHandle xtalkEncodeAES_GCM:ecdhKey data:data aad:aad iv:iv];
+        userToUserDict = [LMIMHelper xtalkEncodeAES_GCM:ecdhKey data:data aad:aad iv:iv];
     } else if ([data isKindOfClass:[NSData class]]){
         StructData *structData = [[StructData alloc] init];
         structData.random = [self get16_32RandData];
         structData.plainData = data;
-        userToUserDict = [KeyHandle xtalkEncodeAES_GCM:ecdhKey withNSdata:structData.data aad:aad iv:iv];
+        userToUserDict = [LMIMHelper xtalkEncodeAES_GCM:ecdhKey withNSdata:structData.data aad:aad iv:iv];
     }
     
     GcmData *gcmData = [[GcmData alloc] init];
@@ -59,9 +60,9 @@
     NSString *iv = [[NSString stringWithFormat:@"%d",arc4random() % 100 + 1000] sha1String];
     NSDictionary *userToUserDict = nil;
     if ([data isKindOfClass:[NSString class]]) {
-        userToUserDict = [KeyHandle xtalkEncodeAES_GCM:ecdhKey data:data aad:aad iv:iv];
+        userToUserDict = [LMIMHelper xtalkEncodeAES_GCM:ecdhKey data:data aad:aad iv:iv];
     } else if ([data isKindOfClass:[NSData class]]){
-        userToUserDict = [KeyHandle xtalkEncodeAES_GCM:ecdhKey withNSdata:data aad:aad iv:iv];
+        userToUserDict = [LMIMHelper xtalkEncodeAES_GCM:ecdhKey withNSdata:data aad:aad iv:iv];
     }
     
     GcmData *gcmData = [[GcmData alloc] init];
@@ -84,7 +85,7 @@
         return nil;
     }
     
-    return [KeyHandle xtalkDecodeAES_GCM:ecdhKey
+    return [LMIMHelper xtalkDecodeAES_GCM:ecdhKey
                                     data:[[NSString alloc] initWithData:gcmData.ciphertext encoding:NSUTF8StringEncoding]
                                      aad:[[NSString alloc] initWithData:gcmData.aad encoding:NSUTF8StringEncoding]
                                       iv:[[NSString alloc] initWithData:gcmData.iv encoding:NSUTF8StringEncoding]
@@ -106,15 +107,15 @@
     if (GJCFStringIsNull(publickey)) {
         publickey = [[ServerCenter shareCenter] getCurrentServer].data.pub_key;
     }
-    NSData *ecdhKey = [KeyHandle getECDHkeyWithPrivkey:privkey publicKey:publickey];
+    NSData *ecdhKey = [LMIMHelper getECDHkeyWithPrivkey:privkey publicKey:publickey];
     if (needEmptySalt) {
         // Empty salt extension
-        ecdhKey = [KeyHandle getAes256KeyByECDHKeyAndSalt:ecdhKey salt:[self get64ZeroData]];
+        ecdhKey = [LMIMHelper getAes256KeyByECDHKeyAndSalt:ecdhKey salt:[self get64ZeroData]];
     }
     if (!gcmData) {
         return nil;
     }
-    NSData *data = [KeyHandle xtalkDecodeAES_GCMDataWithPassword:ecdhKey data:gcmData.ciphertext aad:gcmData.aad iv:gcmData.iv tag:gcmData.tag];
+    NSData *data = [LMIMHelper xtalkDecodeAES_GCMDataWithPassword:ecdhKey data:gcmData.ciphertext aad:gcmData.aad iv:gcmData.iv tag:gcmData.tag];
     return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 
 }
@@ -130,11 +131,11 @@
     if (GJCFStringIsNull(publickey)) {
         publickey = [[ServerCenter shareCenter] getCurrentServer].data.pub_key;
     }
-    NSData *ecdhKey = [KeyHandle getECDHkeyWithPrivkey:privkey publicKey:publickey];
+    NSData *ecdhKey = [LMIMHelper getECDHkeyWithPrivkey:privkey publicKey:publickey];
     if (!gcmData) {
         return nil;
     }
-    NSData *data = [KeyHandle xtalkDecodeAES_GCMDataWithPassword:ecdhKey data:gcmData.ciphertext aad:gcmData.aad iv:gcmData.iv tag:gcmData.tag];
+    NSData *data = [LMIMHelper xtalkDecodeAES_GCMDataWithPassword:ecdhKey data:gcmData.ciphertext aad:gcmData.aad iv:gcmData.iv tag:gcmData.tag];
     return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     
 }
@@ -194,7 +195,7 @@
         return NO;
     }
     
-    return [KeyHandle verifyWithPublicKey:publickey originData:vertiryData signData:sign];
+    return [LMIMHelper verifyWithPublicKey:publickey originData:vertiryData signData:sign];
 }
 
 + (NSString *)signWithData:(id)data{
@@ -209,7 +210,7 @@
     if ([data isKindOfClass:[NSData class]]) {
         signDataString = [data hash256String];
     }
-    NSString *sign = [KeyHandle signHashWithPrivkey:privkey
+    NSString *sign = [LMIMHelper signHashWithPrivkey:privkey
                                                data:signDataString];
     
     return sign;
@@ -228,7 +229,7 @@
 
 
 + (NSData *)get16_32RandData{
-    NSData *randomData = [KeyHandle createRandom512bits];
+    NSData *randomData = [LMIMHelper createRandom512bits];
     int loc = arc4random() % 32;
     int len = arc4random() % 16 + 16;
     randomData = [randomData subdataWithRange:NSMakeRange(loc, len)];
@@ -236,7 +237,7 @@
 }
 
 + (NSData *)getIvData{
-    NSData *ivData = [KeyHandle createRandom512bits];
+    NSData *ivData = [LMIMHelper createRandom512bits];
     ivData = [ivData subdataWithRange:NSMakeRange(0, 16)];
     return ivData;
 }
@@ -280,7 +281,7 @@
     if (!ecdhKey) {
         return nil;
     }
-    NSData *data = [KeyHandle xtalkDecodeAES_GCMDataWithPassword:ecdhKey data:gcmData.ciphertext aad:gcmData.aad iv:gcmData.iv tag:gcmData.tag];
+    NSData *data = [LMIMHelper xtalkDecodeAES_GCMDataWithPassword:ecdhKey data:gcmData.ciphertext aad:gcmData.aad iv:gcmData.iv tag:gcmData.tag];
     return [self getPlainDataWithData:data];
 }
 
@@ -290,7 +291,7 @@
     if (!ecdhKey) {
         return nil;
     }
-    NSData *data = [KeyHandle xtalkDecodeAES_GCMDataWithPassword:ecdhKey data:gcmData.ciphertext aad:gcmData.aad iv:gcmData.iv tag:gcmData.tag];
+    NSData *data = [LMIMHelper xtalkDecodeAES_GCMDataWithPassword:ecdhKey data:gcmData.ciphertext aad:gcmData.aad iv:gcmData.iv tag:gcmData.tag];
     if (haveStructData) {
         return [self getPlainDataWithData:data];
     } else{
@@ -304,7 +305,7 @@
     if (!ecdhKey) {
         return nil;
     }
-    NSData *data = [KeyHandle xtalkDecodeAES_GCMDataWithPassword:[StringTool hexStringToData:ecdhKey] data:gcmData.ciphertext aad:gcmData.aad iv:gcmData.iv tag:gcmData.tag];
+    NSData *data = [LMIMHelper xtalkDecodeAES_GCMDataWithPassword:[StringTool hexStringToData:ecdhKey] data:gcmData.ciphertext aad:gcmData.aad iv:gcmData.iv tag:gcmData.tag];
     return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 }
 
@@ -337,9 +338,9 @@
     if (GJCFStringIsNull(publickey)) {
         publickey = [[ServerCenter shareCenter] getCurrentServer].data.pub_key;
     }
-    NSData *ecdhKey = [KeyHandle getECDHkeyWithPrivkey:privkey publicKey:publickey];
+    NSData *ecdhKey = [LMIMHelper getECDHkeyWithPrivkey:privkey publicKey:publickey];
     if (needEmptySalt) {
-        ecdhKey = [KeyHandle getAes256KeyByECDHKeyAndSalt:ecdhKey salt:[self get64ZeroData]];
+        ecdhKey = [LMIMHelper getAes256KeyByECDHKeyAndSalt:ecdhKey salt:[self get64ZeroData]];
     }
     return  [self decodeGcmDataWithEcdhKey:ecdhKey GcmData:gcmData];
 }
@@ -368,7 +369,7 @@
             aad = [self getIvData];
         }
     }
-    NSDictionary *cipTagDict = [KeyHandle xtalkEncodeAES_GCMWithPassword:ecdhKey originData:data aad:aad];
+    NSDictionary *cipTagDict = [LMIMHelper xtalkEncodeAES_GCMWithPassword:ecdhKey originData:data aad:aad];
     GcmData *gcmData = [[GcmData alloc] init];
     gcmData.iv = [cipTagDict valueForKey:@"iv"];
     gcmData.aad = aad;
@@ -388,7 +389,7 @@
         }
     }
     
-    NSDictionary *cipTagDict = [KeyHandle xtalkEncodeAES_GCMWithPassword:ecdhKey originData:[self createStructDataWithData:data] aad:aad];
+    NSDictionary *cipTagDict = [LMIMHelper xtalkEncodeAES_GCMWithPassword:ecdhKey originData:[self createStructDataWithData:data] aad:aad];
     GcmData *gcmData = [[GcmData alloc] init];
     gcmData.iv = [cipTagDict valueForKey:@"iv"];
     gcmData.aad = aad;
@@ -407,9 +408,9 @@
 
 + (GcmData *)createHalfRandomPeerIMGcmWithData:(NSString *)data chatPubkey:(NSString *)chatPubkey{
     NSString * privkey = [SessionManager sharedManager].loginUserChatCookie.chatPrivkey;
-    NSData *ecdhKey = [KeyHandle getECDHkeyWithPrivkey:privkey publicKey:chatPubkey];
+    NSData *ecdhKey = [LMIMHelper getECDHkeyWithPrivkey:privkey publicKey:chatPubkey];
     // Extended
-    ecdhKey = [KeyHandle getAes256KeyByECDHKeyAndSalt:ecdhKey salt:[SessionManager sharedManager].loginUserChatCookie.salt];
+    ecdhKey = [LMIMHelper getAes256KeyByECDHKeyAndSalt:ecdhKey salt:[SessionManager sharedManager].loginUserChatCookie.salt];
     return [self createGcmDataWithEcdhkey:ecdhKey data:[data dataUsingEncoding:NSUTF8StringEncoding] aad:nil];
 }
 
@@ -421,9 +422,9 @@
         !gcmData) {
         return @"";
     }
-    NSData *ecdhKey = [KeyHandle getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey publicKey:publickey];
-    ecdhKey = [KeyHandle getAes256KeyByECDHKeyAndSalt:ecdhKey salt:salt];
-    NSData *data = [KeyHandle xtalkDecodeAES_GCMDataWithPassword:ecdhKey data:gcmData.ciphertext aad:gcmData.aad iv:gcmData.iv tag:gcmData.tag];
+    NSData *ecdhKey = [LMIMHelper getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey publicKey:publickey];
+    ecdhKey = [LMIMHelper getAes256KeyByECDHKeyAndSalt:ecdhKey salt:salt];
+    NSData *data = [LMIMHelper xtalkDecodeAES_GCMDataWithPassword:ecdhKey data:gcmData.ciphertext aad:gcmData.aad iv:gcmData.iv tag:gcmData.tag];
     return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 }
 
@@ -431,12 +432,12 @@
     
     ChatCookieData *chatCookie = [[SessionManager sharedManager] getChatCookieWithChatSession:chatPubkey];
     NSString * privkey = [SessionManager sharedManager].loginUserChatCookie.chatPrivkey;
-    NSData *ecdhKey = [KeyHandle getECDHkeyWithPrivkey:privkey publicKey:chatCookie.chatPubKey];
+    NSData *ecdhKey = [LMIMHelper getECDHkeyWithPrivkey:privkey publicKey:chatCookie.chatPubKey];
 
     // Salt or
     NSData *exoData = [StringTool DataXOR1:[SessionManager sharedManager].loginUserChatCookie.salt DataXOR2:chatCookie.salt];
 
-    ecdhKey = [KeyHandle getAes256KeyByECDHKeyAndSalt:ecdhKey salt:exoData];
+    ecdhKey = [LMIMHelper getAes256KeyByECDHKeyAndSalt:ecdhKey salt:exoData];
     return [self createGcmDataWithEcdhkey:ecdhKey data:[data dataUsingEncoding:NSUTF8StringEncoding] aad:nil];
 }
 
@@ -455,7 +456,7 @@
         DDLogError(@"Parse failed ：cacheCookie");
         return @"";
     }
-    NSData *ecdhKey = [KeyHandle getECDHkeyWithPrivkey:cacheCookie.chatPrivkey publicKey:publickey];
+    NSData *ecdhKey = [LMIMHelper getECDHkeyWithPrivkey:cacheCookie.chatPrivkey publicKey:publickey];
     
     DDLogInfo(@"hhh:::random ecdhKey %@",[StringTool hexStringFromData:ecdhKey]);
     
@@ -464,12 +465,12 @@
     
     DDLogInfo(@"hhh:::exoData %@",[StringTool hexStringFromData:exoData]);
     
-    ecdhKey = [KeyHandle getAes256KeyByECDHKeyAndSalt:ecdhKey salt:exoData];
+    ecdhKey = [LMIMHelper getAes256KeyByECDHKeyAndSalt:ecdhKey salt:exoData];
     if (!gcmData) {
         return @"";
     }
     DDLogInfo(@"hhh:::ecdhKey %@",[StringTool hexStringFromData:ecdhKey]);
-    NSData *data = [KeyHandle xtalkDecodeAES_GCMDataWithPassword:ecdhKey data:gcmData.ciphertext aad:gcmData.aad iv:gcmData.iv tag:gcmData.tag];
+    NSData *data = [LMIMHelper xtalkDecodeAES_GCMDataWithPassword:ecdhKey data:gcmData.ciphertext aad:gcmData.aad iv:gcmData.iv tag:gcmData.tag];
     return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 }
 
@@ -491,7 +492,7 @@
                  needEmptySalt:(BOOL)needEmptySalt{
     if (needEmptySalt) {
         // Empty salt extension
-        ecdhKey = [KeyHandle getAes256KeyByECDHKeyAndSalt:ecdhKey salt:[self get64ZeroData]];
+        ecdhKey = [LMIMHelper getAes256KeyByECDHKeyAndSalt:ecdhKey salt:[self get64ZeroData]];
     }
     
     if ([data isKindOfClass:[NSString class]]) {
@@ -518,11 +519,11 @@
         publickey = [[ServerCenter shareCenter] getCurrentServer].data.pub_key;
     }
     
-    NSData *ecdhKey = [KeyHandle getECDHkeyWithPrivkey:privkey publicKey:publickey];
+    NSData *ecdhKey = [LMIMHelper getECDHkeyWithPrivkey:privkey publicKey:publickey];
     
     if (needEmptySalt) {
         // Empty salt extension
-        ecdhKey = [KeyHandle getAes256KeyByECDHKeyAndSalt:ecdhKey salt:[self get64ZeroData]];
+        ecdhKey = [LMIMHelper getAes256KeyByECDHKeyAndSalt:ecdhKey salt:[self get64ZeroData]];
     }
     
     if ([data isKindOfClass:[NSString class]]) {
@@ -557,7 +558,7 @@
     messageData.typ = message.type;
     
     
-    NSString *sign = [KeyHandle signHashWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey data:[KeyHandle hexStringFromData:[messageData data]]];
+    NSString *sign = [LMIMHelper signHashWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey data:[LMIMHelper hexStringFromData:[messageData data]]];
     
     MessagePost *messagePost = [[MessagePost alloc] init];
     messagePost.sign = sign;
@@ -616,13 +617,13 @@
     if (GJCFStringIsNull(privkey)) {
         privkey = [[LKUserCenter shareCenter] currentLoginUser].prikey;
     }
-    NSData *ecdhKey = [KeyHandle getECDHkeyWithPrivkey:privkey publicKey:publickey];
+    NSData *ecdhKey = [LMIMHelper getECDHkeyWithPrivkey:privkey publicKey:publickey];
     
     NSData *salt = [self get64ZeroData];
     if (!emptySalt) {
         salt = [ServerCenter shareCenter].httpTokenSalt;
     }
-    ecdhKey = [KeyHandle getAes256KeyByECDHKeyAndSalt:ecdhKey salt:salt];
+    ecdhKey = [LMIMHelper getAes256KeyByECDHKeyAndSalt:ecdhKey salt:salt];
     
     return [self decodeHttpResponse:hResponse withEcdhKey:ecdhKey];
 }
@@ -636,7 +637,7 @@
     }
     if (hResponse.code == successCode) {
         IMResponse *imresponse = (IMResponse *)hResponse.body;
-        if ([KeyHandle verifyWithPublicKey:[[ServerCenter shareCenter] getCurrentServer].data.pub_key originData:[imresponse.cipherData.data hash256String] signData:imresponse.sign]) {
+        if ([LMIMHelper verifyWithPublicKey:[[ServerCenter shareCenter] getCurrentServer].data.pub_key originData:[imresponse.cipherData.data hash256String] signData:imresponse.sign]) {
             NSData *decodeData = [ConnectTool decodeGcmDataWithEcdhKey:ecdhKey GcmData:imresponse.cipherData];
             return decodeData;
         }

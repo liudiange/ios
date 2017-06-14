@@ -9,11 +9,16 @@
 #import "KeyHandle.h"
 //Note: This class does not reference too many other methods of the class. May be encapsulated
 
-extern "C" {
+#ifdef __cplusplus
+#if __cplusplus
+extern "C"{
 #include "bip39.h"
 #include "ecies.h"
 #include "pbkdf2.h"
 }
+#endif
+#endif /* __cplusplus */
+
 #include "key.h"
 #include <sstream>
 
@@ -46,6 +51,7 @@ extern "C" {
 #import "Protofile.pbobjc.h"
 #include <CommonCrypto/CommonCrypto.h>
 
+
 #define ONTEST 1//1 online ，0 test
 
 @implementation KeyHandle
@@ -72,17 +78,17 @@ extern "C" {
 
 //  Data is converted to hexadecimalData is converted to hexadecimal
 + (NSString *)hexStringFromData:(NSData *)data{
-    
+
     unsigned char result[CC_SHA256_DIGEST_LENGTH];
-    
+
     CC_SHA256(data.bytes, (int32_t)data.length, result);
-    
+
     NSData *newData = [[NSData alloc] initWithBytes:result length:CC_SHA256_DIGEST_LENGTH];
-    
+
     unsigned char Nresult[CC_SHA256_DIGEST_LENGTH];
-    
+
     CC_SHA256(newData.bytes, (int32_t)newData.length, Nresult);
-    
+
     NSMutableString *ret = [NSMutableString stringWithCapacity:CC_SHA256_DIGEST_LENGTH*2];
     for (int i = 0; i<CC_SHA256_DIGEST_LENGTH; i++) {
         [ret appendFormat:@"%02x",Nresult[i]];
@@ -101,7 +107,7 @@ extern "C" {
 }
 
 + (NSString *)creatNewPrivkeyByRandomStr:(NSString *)randomStr{
-    
+
     char myRand[129] = {0};
     char *randomC = (char *)[randomStr UTF8String];
     sprintf(myRand,"%s",randomC);
@@ -128,7 +134,7 @@ extern "C" {
     //开启测试模式
     EnableTESTmode();
 #endif
-    
+
     char myaddress[128];
     char *myPubkey = (char *)[pubkey UTF8String];
     GetBTCAddrFromPubKey(myPubkey,myaddress);
@@ -140,12 +146,12 @@ extern "C" {
  *
  */
 + (NSString *)getAddressByPrivKey:(NSString *)prvkey{
-    
+
 #if !ONTEST
     //开启测试模式
     EnableTESTmode();
 #endif
-    
+
     char *cPrivkey = (char *)[prvkey UTF8String];
     char pubKey[128];
     GetPubKeyFromPrivKey(cPrivkey, pubKey);
@@ -175,26 +181,26 @@ extern "C" {
     sprintf(usrID_BtcAddress,bitAddressString.c_str());
     std::string passwordStr = [password UTF8String];
     sprintf(pass,passwordStr.c_str());
-    
+
     std::string retString=xtalkUsrPirvKeyEncrypt_String(usrID_BtcAddress, privKey_HexString, pass, n, 1);
     printf("xtalk encrypted = %s\n",retString.c_str());
-    
+
     return [NSString stringWithFormat:@"%s",retString.c_str()];
 }
 
 + (NSDictionary *)decodePrikeyGetDict:(NSString *) encodeStr withPassword:(NSString *)password{
-    
+
     if (GJCFStringIsNull(encodeStr) || GJCFStringIsNull(password)) {
         return @{@"is_success":@(NO)};
     }
 
-    
+
     std::string retString = [encodeStr UTF8String];
     char usrID2_BtcAddress[256];
     char privKey2_HexString[65];
     char privKey[52];
     char pass[64];
-    
+
     string passwordStr = [password UTF8String];
     sprintf(pass,(char *)passwordStr.c_str());
     BOOL isSuccess = NO;
@@ -206,7 +212,7 @@ extern "C" {
     else
     {
         printf("decrypted userID=%s\n",usrID2_BtcAddress);
-        
+
         printf("decrypted privKey=%s\n",privKey2_HexString);
         GetBtcPrivKeyFromRawPrivKey(privKey, privKey2_HexString);
         printf("%s",privKey);
@@ -222,9 +228,9 @@ extern "C" {
     char *rawP = (char *)[rawPrivkey UTF8String];
     char privKey[52];
     GetBtcPrivKeyFromRawPrivKey(privKey, rawP);
-    
+
     NSString *pri = [NSString stringWithUTF8String:privKey];
-    
+
     return pri;
 }
 
@@ -274,7 +280,7 @@ void xtalkRNG(void *buf, int bits){
 +(NSString *)getMaxRandomWithGesture:(NSString *)gestureStr andSysRandomStr:(NSString *)sysRandomStr{
     NSString *newGestureStr = [gestureStr substringWithRange:NSMakeRange(0,16)];
     NSString *newSysRandomStr = [sysRandomStr substringWithRange:NSMakeRange(16,16)];
-    
+
     return [newGestureStr stringByAppendingString:newSysRandomStr];
 }
 
@@ -284,12 +290,12 @@ void xtalkRNG(void *buf, int bits){
    Int CheckPrivKey (char * privKey)
  */
 +(BOOL) checkPrivkey:(NSString *)privkey{
-    
+
 #if !ONTEST
     //开启测试模式
     EnableTESTmode();
 #endif
-    
+
     char *cPrivkey = (char *)[privkey UTF8String];
     int result = CheckPrivKey(cPrivkey);
     return result==0?YES:NO;
@@ -301,12 +307,12 @@ void xtalkRNG(void *buf, int bits){
    Int CheckAddress (char * addr)
  */
 +(BOOL) checkAddress:(NSString *)address{
-    
+
 #if !ONTEST
     //开启测试模式
     EnableTESTmode();
 #endif
-    
+
     // Adapt the btc.com sweep results
     address = [address stringByReplacingOccurrencesOfString:@"bitcoin:" withString:@""];
     if(address.length == 0){
@@ -322,47 +328,47 @@ void xtalkRNG(void *buf, int bits){
  */
 
 + (NSString *)getECDHkeyUsePrivkey:(NSString *)privkey PublicKey:(NSString *)pubkey{
-    
+
     char *privkeyc = (char *)[privkey UTF8String];
     char *pubkeyc = (char *)[pubkey UTF8String];
         unsigned char ecdh_key[32];
 //    int result = xtalk_getECDHkey(privkeyc, pubkeyc, ecdh_key);
     int len =  xtalk_getRawECDHkey(privkeyc, pubkeyc, ecdh_key);
     if(len == 32){
-        
-        
+
+
         std::vector<unsigned char> outdata;
         outdata.resize(32);
         for(int i=0;i<32;i++)
             outdata[i]=ecdh_key[i];
         std::string str;
         str = BinToHexString(outdata);
-        
+
         str = bytestohexstring((char *)ecdh_key, 32);
 
         NSString *result =  [NSString stringWithFormat:@"%s",str.c_str()];
         return result;
     }
-    
+
     return @"";
 }
 
 #pragma mark -AES
 
 + (NSDictionary *)xtalkEncodeAES_GCM:(NSString *)password data:(NSString *)dataStr aad:(NSString *)aad iv:(NSString *) iv{
-    
+
     unsigned char *encryptedData;
 
     //IV
     std::vector<unsigned char> IVByte;
     IVByte=HexStringToBin([iv UTF8String]);
-    
-    
+
+
     // key
     std::vector<unsigned char> KeyByte;
     KeyByte=HexStringToBin([password UTF8String]);
-    
- 
+
+
     //aad
     std::vector<unsigned char> aadByte;
     aadByte=HexStringToBin([aad UTF8String]);
@@ -378,17 +384,17 @@ void xtalkRNG(void *buf, int bits){
 
     // accept tag
     unsigned char tag[16];
-    
+
     int encryptedLen=xtalkEncodeAES_gcm(&inDataByte[0],len, &aadByte[0], aadByte.size(), &KeyByte[0], &IVByte[0], IVByte.size(), &encryptedData, tag);
 
-    
+
     std::string tagstring=HexStr(&tag[0],&tag[16]);
-    
+
     std::string encryptedDatastring=HexStr(&encryptedData[0],&encryptedData[encryptedLen]);
-    
+
     if(encryptedData)
         free(encryptedData);
-    
+
     NSDictionary *resultD = @{
                               @"encryptedDatastring":[[NSString alloc] initWithUTF8String:encryptedDatastring.c_str()],
                               @"tagstring":[[NSString alloc] initWithUTF8String:tagstring.c_str()]
@@ -398,40 +404,40 @@ void xtalkRNG(void *buf, int bits){
 }
 
 + (GcmData *)xtalkEncodeAES_GCMWithPassword:(NSData *)password data:(NSData *)data aad:(NSData *)aad{
-    
+
     if(!data || !password || !aad){
         return nil;
     }
-    
+
     unsigned char *encryptedData;
-    
+
     NSData *ivData = [self createRandom512bits];
     ivData = [ivData subdataWithRange:NSMakeRange(0, 16)];
-    
+
     //IV
     Byte *ivdata = (Byte *)[ivData bytes];
-    
+
     // key
     Byte *keydata = (Byte *)[password bytes];
 
     //aad
     Byte *aaddata = (Byte *)[aad bytes];
-    
+
     // perapre indata
     Byte *indata = (Byte *)[data bytes];
 
     //accept tag
     unsigned char tag[16];
-    
+
     int encryptedLen=xtalkEncodeAES_gcm(indata,(int)data.length, aaddata,(int)aad.length, keydata,ivdata,(int)ivData.length, &encryptedData, tag);
-    
+
     if(encryptedLen == -1){
         return nil;
     }
-    
+
     if(encryptedData)
         free(encryptedData);
-    
+
     GcmData *gcmData = [[GcmData alloc] init];
     gcmData.iv = ivData;
     gcmData.aad = aad;
@@ -439,7 +445,7 @@ void xtalkRNG(void *buf, int bits){
     gcmData.ciphertext = ciphertextData;
     NSData* tagData = [NSData dataWithBytes:(const void *)tag length:sizeof(unsigned char)*16];
     gcmData.tag = tagData;
-    
+
     return gcmData;
 }
 
@@ -463,46 +469,46 @@ void xtalkRNG(void *buf, int bits){
 
 
 + (NSDictionary *)xtalkEncodeAES_GCMWithPassword:(NSData *)password originData:(NSData *)data aad:(NSData *)aad{
-    
+
     if(!data || data.length <= 0 || !password  || password.length <= 0 || !aad || aad.length <= 0){
         return nil;
     }
-    
+
     unsigned char *encryptedData;
-    
+
     NSData *ivData = [self createRandom512bits];
     ivData = [ivData subdataWithRange:NSMakeRange(0, 16)];
-    
+
     //IV
     unsigned char *ivdata = (unsigned char *)[ivData bytes];
-    
+
     // key
     unsigned char *keydata = (unsigned char *)[password bytes];
-    
+
     //aad
     unsigned char *aaddata = (unsigned char *)[aad bytes];
-    
+
     // perapre indata
     unsigned char *indata = (unsigned char *)[data bytes];
-    
+
     //接受tag
     unsigned char tag[16];
-    
+
     int encryptedLen=xtalkEncodeAES_gcm(indata,data.length, aaddata,aad.length, keydata,ivdata,ivData.length, &encryptedData, tag);
-    
+
     if(encryptedLen == -1){
         return nil;
     }
 
     NSData* ciphertextData = [NSData dataWithBytes:(const void *)encryptedData length:sizeof(unsigned char)*encryptedLen];
     NSData* tagData = [NSData dataWithBytes:(const void *)tag length:sizeof(unsigned char)*16];
-    
+
     NSDictionary *cipTagDict = @{@"ciphertext":ciphertextData,
                                  @"tag":tagData,
                                  @"iv":ivData};
     if(encryptedData)
         free(encryptedData);
-    
+
     return cipTagDict;
 }
 
@@ -518,58 +524,58 @@ void xtalkRNG(void *buf, int bits){
 
 
 + (NSDictionary *)xtalkEncodeAES_GCM:(NSString *)password withNSdata:(NSData *)data aad:(NSString *)aad iv:(NSString *) iv{
-    
+
     if(!data){
         return nil;
     }
     if(GJCFStringIsNull(password)){
         return nil;
     }
-    
-    
+
+
     unsigned char *encryptedData;
     unsigned char *decryptedData;
-    
+
     //IV
     std::vector<unsigned char> IVByte;
     IVByte=HexStringToBin([iv UTF8String]);
-    
-    
+
+
     // key
     std::vector<unsigned char> KeyByte;
     KeyByte=HexStringToBin([password UTF8String]);
-    
-    
+
+
     //aad
     std::vector<unsigned char> aadByte;
     aadByte=HexStringToBin([aad UTF8String]);
-    
-    
-    
+
+
+
     // perapre indata
     int indatalen = data.length;
     Byte *indata = (Byte *)[data bytes];
-    
+
     unsigned char tag[16];
 
     int encryptedLen=xtalkEncodeAES_gcm(indata,indatalen, &aadByte[0], aadByte.size(), &KeyByte[0], &IVByte[0], IVByte.size(), &encryptedData, tag);
     if(encryptedLen == -1){
         return nil;
     }
-    
+
     std::string tagstring=HexStr(&tag[0],&tag[16]);
-    
+
     std::string encryptedDatastring=HexStr(&encryptedData[0],&encryptedData[encryptedLen]);
-    
+
     if(encryptedData)
         free(encryptedData);
-    
+
     NSDictionary *resultD = @{
                               @"encryptedDatastring":[[NSString alloc] initWithUTF8String:encryptedDatastring.c_str()],
                               @"tagstring":[[NSString alloc] initWithUTF8String:tagstring.c_str()]
                               };
 
-    
+
     return resultD;
 }
 
@@ -578,35 +584,35 @@ void xtalkRNG(void *buf, int bits){
 
 + (NSData *)xtalkDecodeAES_GCMWithPassword:(NSString *)password data:(NSString *)dataStr aad:(NSString *)aad iv:(NSString *) iv tag:(NSString *)tagin{
     unsigned char *decryptedData;
-    
-    
+
+
     std::vector<unsigned char> IVByte;
     IVByte=HexStringToBin([iv UTF8String]);
-    
+
     // key
     std::vector<unsigned char> KeyByte;
     KeyByte=HexStringToBin([password UTF8String]);
-    
+
     //aad
     std::vector<unsigned char> aadByte;
     aadByte=HexStringToBin([aad UTF8String]);
-    
+
     // perapre indata
     string indataStr = [dataStr UTF8String];
-    
+
     std::vector<unsigned char> inDataByte;
     inDataByte = HexStringToBin(indataStr);
-    
-    
+
+
     std::vector<unsigned char> tagByte;
     tagByte=HexStringToBin([tagin UTF8String]);
-    
-    
+
+
     int decryptedLen=xtalkDecodeAES_gcm(&inDataByte[0], inDataByte.size(), &aadByte[0], aadByte.size(), &tagByte[0], &KeyByte[0], &IVByte[0], IVByte.size(), &decryptedData);
-    
-    
+
+
     NSData *result = nil;
-    
+
     if(decryptedLen < 0){
         return result;
     }
@@ -615,7 +621,7 @@ void xtalkRNG(void *buf, int bits){
     for(int i=0;i<decryptedLen;i++){
         resultData[i]=decryptedData[i];
     }
-    
+
     if(decryptedLen>0)
     {
         result = [[NSData alloc] initWithBytes:&resultData[0]  length:decryptedLen];
@@ -625,34 +631,34 @@ void xtalkRNG(void *buf, int bits){
         std::string error=xtalk_getErrInfo();
         printf("Error: %s\n",error.c_str());
     }
-    
+
     if(decryptedData)
         free(decryptedData);
-    
+
     return result;
 }
 
 
 + (NSData *)xtalkDecodeAES_GCMDataWithPassword:(NSData *)password data:(NSData *)data aad:(NSData *)aad iv:(NSData *)iv tag:(NSData *)tag{
-    
+
     unsigned char *decryptedData;
-    
-    
+
+
     unsigned char *IVByte = (unsigned char*)[iv bytes];
-    
+
     unsigned char *KeyByte = (unsigned char*)[password bytes];
-    
+
     unsigned char *inDataByte = (unsigned char*)[data bytes];
-    
+
     unsigned char *aadByte = (unsigned char*)[aad bytes];
-    
+
     unsigned char *tagByte = (unsigned char*)[tag bytes];
 
-    
+
     int decryptedLen=xtalkDecodeAES_gcm(inDataByte, data.length, aadByte, aad.length, tagByte, KeyByte, IVByte, iv.length, &decryptedData);
-    
+
     NSData *result = nil;
-    
+
     if(decryptedLen>0)
     {
         result = [[NSData alloc] initWithBytes:&decryptedData[0]  length:decryptedLen];
@@ -662,44 +668,44 @@ void xtalkRNG(void *buf, int bits){
         std::string error=xtalk_getErrInfo();
         printf("Error: %s\n",error.c_str());
     }
-    
+
     if(decryptedData)
         free(decryptedData);
-    
+
     return result;
 }
 
 
 + (NSString *)xtalkDecodeAES_GCM:(NSString *)password data:(NSString *)dataStr aad:(NSString *)aad iv:(NSString *) iv tag:(NSString *)tagin{
     unsigned char *decryptedData;
-    
-    
+
+
     std::vector<unsigned char> IVByte;
     IVByte=HexStringToBin([iv UTF8String]);
 
     // key
     std::vector<unsigned char> KeyByte;
     KeyByte=HexStringToBin([password UTF8String]);
-    
+
     //aad
     std::vector<unsigned char> aadByte;
     aadByte=HexStringToBin([aad UTF8String]);
-    
+
     // perapre indata
     string indataStr = [dataStr UTF8String];
     std::vector<unsigned char> inDataByte;
     inDataByte = HexStringToBin(indataStr);
-    
-    
+
+
     std::vector<unsigned char> tagByte;
     tagByte=HexStringToBin([tagin UTF8String]);
-    
-    
+
+
     int decryptedLen=xtalkDecodeAES_gcm(&inDataByte[0], inDataByte.size(), &aadByte[0], aadByte.size(), &tagByte[0], &KeyByte[0], &IVByte[0], IVByte.size(), &decryptedData);
-    
-    
+
+
     NSString *result = @"";
-    
+
     if(decryptedLen < 0){
         return result;
     }
@@ -708,7 +714,7 @@ void xtalkRNG(void *buf, int bits){
     for(int i=0;i<decryptedLen;i++){
         resultData[i]=decryptedData[i];
     }
-    
+
     if(decryptedLen>0)
     {
         result = [[NSString alloc] initWithBytes:&resultData[0] length:decryptedLen encoding:NSUTF8StringEncoding];
@@ -718,10 +724,10 @@ void xtalkRNG(void *buf, int bits){
         std::string error=xtalk_getErrInfo();
         printf("Error: %s\n",error.c_str());
     }
-    
+
     if(decryptedData)
         free(decryptedData);
-    
+
     return result;
 }
 
@@ -732,7 +738,7 @@ void xtalkRNG(void *buf, int bits){
 
     char rawPrivKey[256];
     GetRawPrivKey(rawPrivKey,privkey_);
-    
+
     return [NSString stringWithUTF8String:rawPrivKey];
 }
 
@@ -742,7 +748,7 @@ void xtalkRNG(void *buf, int bits){
     if (GJCFStringIsNull(privkey) || !data) {
         return nil;
     }
-    
+
     char *privkey_ = (char *)[privkey UTF8String];
     char *hashstr = (char *)[data UTF8String];
     char signStr[256];
@@ -777,7 +783,7 @@ void xtalkRNG(void *buf, int bits){
 
 
 + (NSString *)getPassByPrikey:(NSString *)prikey{
- 
+
     return [self getHash256:prikey];
 }
 
@@ -793,10 +799,10 @@ unsigned char strToChar (char a, char b)
 }
 
 + (NSData *)hexStringToData:(NSString *)hex{
-    
+
     std::vector<unsigned char> binByte;
     binByte=HexStringToBin([hex UTF8String]);
-    
+
     NSData * data = [[NSData alloc]
                    initWithBytesNoCopy:binByte.data()
                    length:binByte.size()
@@ -827,7 +833,7 @@ char* hextostr(const std::string& hexStr)
     size_t len = hexStr.length();
     int k=0;
     if (len & 1) return NULL;
-    
+
     char* output = new char[(len/2)+1];
     for (size_t i = 0; i < len; i+=2)
     {
@@ -901,25 +907,25 @@ int xtalkEncodeAES_gcm(unsigned char *plaintext, int plaintext_len, unsigned cha
                        unsigned char **cipherret, unsigned char *tag)
 {
     EVP_CIPHER_CTX *ctx;
-    
+
     int len;
     unsigned char *ciphertext;
     int ciphertext_len;
-    
+
     unsigned char initval_hex[16]={0x23,0x00,0x00,0x00,
         0x00,0x00,0x00,0x00,
         0x00,0x00,0x00,0x00,
         0x00,0x00,0x00,0x33};
-    
+
     if((!iv) || ivlen<=0)
     {
         iv=initval_hex;
         ivlen=16;
     }
-    
+
     *cipherret=(unsigned char *)malloc(plaintext_len);
     ciphertext=*cipherret;
-    
+
     /* Create and initialise the context */
     if(!(ctx = EVP_CIPHER_CTX_new()))
     {
@@ -928,7 +934,7 @@ int xtalkEncodeAES_gcm(unsigned char *plaintext, int plaintext_len, unsigned cha
         *cipherret=NULL;
         return -1;
     }
-    
+
     /* Initialise the encryption operation. */
     if(1 != EVP_EncryptInit_ex(ctx, EVP_aes_256_gcm(), NULL, NULL, NULL))
     {
@@ -937,7 +943,7 @@ int xtalkEncodeAES_gcm(unsigned char *plaintext, int plaintext_len, unsigned cha
         *cipherret=NULL;
         return -1;
     }
-    
+
     /* Set IV length if default 12 bytes (96 bits) is not appropriate */
     if(1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, ivlen, NULL))
     {
@@ -946,7 +952,7 @@ int xtalkEncodeAES_gcm(unsigned char *plaintext, int plaintext_len, unsigned cha
         *cipherret=NULL;
         return -1;
     }
-    
+
     /* Initialise key and IV */
     if(1 != EVP_EncryptInit_ex(ctx, NULL, NULL, key, iv))
     {
@@ -955,7 +961,7 @@ int xtalkEncodeAES_gcm(unsigned char *plaintext, int plaintext_len, unsigned cha
         *cipherret=NULL;
         return -1;
     }
-    
+
     /* Provide any AAD data. This can be called zero or more times as
      * required
      */
@@ -966,7 +972,7 @@ int xtalkEncodeAES_gcm(unsigned char *plaintext, int plaintext_len, unsigned cha
         *cipherret=NULL;
         return -1;
     }
-    
+
     /* Provide the message to be encrypted, and obtain the encrypted output.
      * EVP_EncryptUpdate can be called multiple times if necessary
      */
@@ -978,7 +984,7 @@ int xtalkEncodeAES_gcm(unsigned char *plaintext, int plaintext_len, unsigned cha
         return -1;
     }
     ciphertext_len = len;
-    
+
     /* Finalise the encryption. Normally ciphertext bytes may be written at
      * this stage, but this does not occur in GCM mode
      */
@@ -990,7 +996,7 @@ int xtalkEncodeAES_gcm(unsigned char *plaintext, int plaintext_len, unsigned cha
         return -1;
     }
     ciphertext_len += len;
-    
+
     /* Get the tag */
     if(1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, 16, tag))
     {
@@ -999,10 +1005,10 @@ int xtalkEncodeAES_gcm(unsigned char *plaintext, int plaintext_len, unsigned cha
         *cipherret=NULL;
         return -1;
     }
-    
+
     /* Clean up */
     EVP_CIPHER_CTX_free(ctx);
-    
+
     return ciphertext_len;
 }
 
@@ -1015,21 +1021,21 @@ int xtalkDecodeAES_gcm(unsigned char *ciphertext, int ciphertext_len, unsigned c
     unsigned char *plaintext;
     int plaintext_len;
     int ret;
-    
+
     unsigned char initval_hex[16]={0x23,0x00,0x00,0x00,
         0x00,0x00,0x00,0x00,
         0x00,0x00,0x00,0x00,
         0x00,0x00,0x00,0x33};
-    
+
     if((!iv) || ivlen<=0)
     {
         iv=initval_hex;
         ivlen=16;
     }
-    
+
     *plainret=(unsigned char *)malloc(ciphertext_len);
     plaintext=*plainret;
-    
+
     /* Create and initialise the context */
     if(!(ctx = EVP_CIPHER_CTX_new()))
     {
@@ -1038,7 +1044,7 @@ int xtalkDecodeAES_gcm(unsigned char *ciphertext, int ciphertext_len, unsigned c
         *plainret=NULL;
         return -1;
     }
-    
+
     /* Initialise the decryption operation. */
     if(!EVP_DecryptInit_ex(ctx, EVP_aes_256_gcm(), NULL, NULL, NULL))
     {
@@ -1047,7 +1053,7 @@ int xtalkDecodeAES_gcm(unsigned char *ciphertext, int ciphertext_len, unsigned c
         *plainret=NULL;
         return -1;
     }
-    
+
     /* Set IV length. Not necessary if this is 12 bytes (96 bits) */
     if(!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, ivlen, NULL))
     {
@@ -1056,7 +1062,7 @@ int xtalkDecodeAES_gcm(unsigned char *ciphertext, int ciphertext_len, unsigned c
         *plainret=NULL;
         return -1;
     }
-    
+
     /* Initialise key and IV */
     if(!EVP_DecryptInit_ex(ctx, NULL, NULL, key, iv))
     {
@@ -1065,7 +1071,7 @@ int xtalkDecodeAES_gcm(unsigned char *ciphertext, int ciphertext_len, unsigned c
         *plainret=NULL;
         return -1;
     }
-    
+
     /* Provide any AAD data. This can be called zero or more times as
      * required
      */
@@ -1076,7 +1082,7 @@ int xtalkDecodeAES_gcm(unsigned char *ciphertext, int ciphertext_len, unsigned c
         *plainret=NULL;
         return -1;
     }
-    
+
     /* Provide the message to be decrypted, and obtain the plaintext output.
      * EVP_DecryptUpdate can be called multiple times if necessary
      */
@@ -1088,7 +1094,7 @@ int xtalkDecodeAES_gcm(unsigned char *ciphertext, int ciphertext_len, unsigned c
         return -1;
     }
     plaintext_len = len;
-    
+
     /* Set expected tag value. Works in OpenSSL 1.0.1d and later */
     if(!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, 16, tag))
     {
@@ -1096,16 +1102,16 @@ int xtalkDecodeAES_gcm(unsigned char *ciphertext, int ciphertext_len, unsigned c
         free(plaintext);
         *plainret=NULL;
         return -1;
-    }	
-    
+    }
+
     /* Finalise the decryption. A positive return value indicates success,
      * anything else is a failure - the plaintext is not trustworthy.
      */
     ret = EVP_DecryptFinal_ex(ctx, plaintext + len, &len);
-    
+
     /* Clean up */
     EVP_CIPHER_CTX_free(ctx);
-    
+
     if(ret > 0)
     {
         /* Success */
@@ -1124,13 +1130,13 @@ int xtalkDecodeAES_gcm(unsigned char *ciphertext, int ciphertext_len, unsigned c
 
 #pragma mark - wallet
 + (NSString *)createRawTranscationWithTvsArray:(NSArray *)tvsArray outputs:(NSDictionary *)outputs{
-    
-    
+
+
 #if !ONTEST
     //开启测试模式
     EnableTESTmode();
 #endif
-    
+
     // checkout format
     for (NSDictionary *temD in tvsArray) {
         if (![temD isKindOfClass:[NSDictionary class]]) {
@@ -1146,22 +1152,22 @@ int xtalkDecodeAES_gcm(unsigned char *ciphertext, int ciphertext_len, unsigned c
             return nil;
         }
     }
-    
+
     NSString *tvsJson = [self ObjectTojsonString:tvsArray];
     NSString *outputJson = [self ObjectTojsonString:outputs];
     NSString *inparamStr_ = [NSString stringWithFormat:@"%@ %@",tvsJson,outputJson];
-    
-    
+
+
     char *rawtrans_str;
     char inparam[1024 * 100];
-    
+
     const char *inparam1 = [inparamStr_ UTF8String];// Naked trading data
     strcpy(inparam,inparam1);
     printf("start to call: createrawtransaction  %s\n",inparam);
-    
+
     createRawTranscation(inparam,&rawtrans_str);
     printf("createRawTranscation=%s\n",rawtrans_str);
-    
+
     NSString *rawTranscation = [NSString stringWithUTF8String:rawtrans_str];
     free(rawtrans_str);
     return rawTranscation;
@@ -1169,12 +1175,12 @@ int xtalkDecodeAES_gcm(unsigned char *ciphertext, int ciphertext_len, unsigned c
 
 
 + (NSString *)signRawTranscationWithTvsArray:(NSArray *)tvsArray privkeys:(NSArray *)privkeys rawTranscation:(NSString *)rawTranscation{
-    
+
 #if !ONTEST
     //开启测试模式
     EnableTESTmode();
 #endif
-    
+
     for (NSDictionary *temD in tvsArray) {
         if (![temD isKindOfClass:[NSDictionary class]]) {
             return nil;
@@ -1189,14 +1195,14 @@ int xtalkDecodeAES_gcm(unsigned char *ciphertext, int ciphertext_len, unsigned c
             return nil;
         }
     }
-    
+
     NSString *tvsJson = [self ObjectTojsonString:tvsArray];
-    
-    
+
+
     const char *rawtrans_str = [rawTranscation UTF8String];
     char *signedtrans_ret;
     char inparam[1024 * 100];
-    
+
     NSArray * privkeyArr_ =  privkeys;//
     // Signature parameters json data
     NSMutableString *signParamStr = [NSMutableString stringWithFormat:@"%s",rawtrans_str];
@@ -1207,28 +1213,28 @@ int xtalkDecodeAES_gcm(unsigned char *ciphertext, int ciphertext_len, unsigned c
     [signParamStr appendString:privKeyJson];
     const char *inparam2 = [signParamStr UTF8String];//sign data
     strcpy(inparam,inparam2);
-    
-    
+
+
     signRawTranscation(inparam,&signedtrans_ret);
     printf("signRawTranscation=%s\n",signedtrans_ret);
-    
+
     NSString *signedStr = [NSString stringWithFormat:@"%s",signedtrans_ret];
-    
-    
+
+
     free(signedtrans_ret);
-    
+
     NSError *error;
     NSDictionary *completeDic = [NSJSONSerialization JSONObjectWithData:[signedStr dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:&error];
     BOOL b = [[completeDic objectForKey:@"complete"] boolValue];
     if (b) {
         NSString *result = [completeDic objectForKey:@"hex"];
-        
+
         return result;
     }
     NSLog(@"signRawTranscation is failure,please check!");
-    
+
     return nil;
-    
+
 }
 
 // Data is converted to JsonString type
@@ -1238,8 +1244,8 @@ int xtalkDecodeAES_gcm(unsigned char *ciphertext, int ciphertext_len, unsigned c
         return nil;
     }
     NSString *jsonString = [[NSString alloc]init];
-    
-    
+
+
     // The system comes with the method
     // /*
     NSError *error;
@@ -1251,13 +1257,13 @@ int xtalkDecodeAES_gcm(unsigned char *ciphertext, int ciphertext_len, unsigned c
     } else {
         jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     }
-    
+
     NSMutableString *mutStr = [NSMutableString stringWithString:jsonString];
     NSRange range = {0,jsonString.length};
     [mutStr replaceOccurrencesOfString:@" " withString:@"" options:NSLiteralSearch range:range];
     NSRange range2 = {0,mutStr.length};
     [mutStr replaceOccurrencesOfString:@"\n" withString:@"" options:NSLiteralSearch range:range2];
-    
+
     return mutStr;
 }
 
@@ -1311,13 +1317,13 @@ int xtalk_getECDHkey(char *privKey, char *pubKey, unsigned char *ecdh_key /* mus
 int xtalk_ECDHencrypt(unsigned char *ecdh_key, unsigned char *input, int inLen, unsigned char **encrypted_output)
 {
     secure_t *ciphered = NULL;
-    
+
     if (!(ciphered = ecies_encryptECDH(ecdh_key, (unsigned char *)input, inLen)))
     {
         printf("The encryption process failed!\n");
         return -1;
     }
-    
+
     *encrypted_output=(unsigned char *)ciphered;
     return secure_total_length(ciphered);
 }
@@ -1343,14 +1349,14 @@ int xtalk_ECDHdecrypt(unsigned char *ecdh_key, unsigned char *encrypted, int enL
     int i;
     ciphered=(secure_t *)malloc(enLen);
     memcpy((void *)ciphered,encrypted,enLen);
-    
+
     if (!(original = ecies_decryptECDH(ecdh_key, ciphered, &olen)))
     {
         printf("The decryption process failed!\n");
         free(ciphered);
         return -1;
     }
-    
+
     *decrypted_output=original;
     free(ciphered);
     return olen;
@@ -1429,47 +1435,45 @@ string HexToBin(const string &strHex)
     return strBin;
 }
 
-// usrID is 36 bytes length     privKey is 32 bytes length
-#define XTALK_USRID_LEN		36
-#define XTALK_PRIVKEY_LEN	32
+
 std::string xtalkUsrPirvKeyEncrypt(unsigned char *usrID, unsigned char *privKey, char *pwd, int n, int ver)
 {
     //  below is the process of E1
     unsigned char h[64];
     unsigned char chk[2];
     unsigned char usrIDAandPrivKey[XTALK_USRID_LEN+XTALK_PRIVKEY_LEN];
-    
+
     // user id 8bytes
     memcpy(usrIDAandPrivKey,usrID,XTALK_USRID_LEN);
     // privkey 32 bytes
     memcpy(usrIDAandPrivKey+XTALK_USRID_LEN,privKey,XTALK_PRIVKEY_LEN);
-    
+
     xtalkSHA512(usrIDAandPrivKey, XTALK_USRID_LEN+XTALK_PRIVKEY_LEN, h);
-    
+
     // copy first 2 bytes to chk
     memcpy(chk,h,2);
-    
+
     // below is the process of E2
     unsigned char salt[8];	// 8*8= 64 bits
     RAND_bytes(salt,8);
-    
+
     // below is the process of E3
     unsigned char key[256/8];
     xtalkPBKDF2_HMAC_SHA512((unsigned char *)pwd, strlen(pwd), salt, 64, key, 256, n);
-    
+
     // below is the process of E4
     unsigned char chkUsrIDPrivKey[2+XTALK_USRID_LEN+XTALK_PRIVKEY_LEN];	// 2+36+32 = 70
     memcpy(chkUsrIDPrivKey,chk,2);
     memcpy(chkUsrIDPrivKey+2,usrID,XTALK_USRID_LEN);
     memcpy(chkUsrIDPrivKey+2+XTALK_USRID_LEN,privKey,XTALK_PRIVKEY_LEN);
-    
+
     AES_KEY aes_key;
     if(AES_set_encrypt_key((const unsigned char*)key, sizeof(key) * 8, &aes_key) < 0)
     {
         assert(false);
         return "error";
     }
-    
+
     unsigned char *secret;
     unsigned char *data_tmp;
     unsigned int ret_len = sizeof(chkUsrIDPrivKey);	// use input data len to get the secret len
@@ -1481,7 +1485,7 @@ std::string xtalkUsrPirvKeyEncrypt(unsigned char *usrID, unsigned char *privKey,
     secret=(unsigned char *)malloc(ret_len);
     memset(data_tmp,0x00,ret_len);
     memcpy(data_tmp,chkUsrIDPrivKey,sizeof(chkUsrIDPrivKey));	// prepare data for encrypt
-    
+
     for(unsigned int i = 0; i < ret_len/AES_BLOCK_SIZE; i++)
     {
         unsigned char out[AES_BLOCK_SIZE];
@@ -1491,21 +1495,21 @@ std::string xtalkUsrPirvKeyEncrypt(unsigned char *usrID, unsigned char *privKey,
     }
     free(data_tmp);
     // data stored in secret, length is ret_len
-    
+
     // below is the process of E5
     unsigned char *result;
     result=(unsigned char *)malloc(1+8+ret_len);	// 1 byte version + 8 bytes salt + secret
-    
+
     // set v value;
     result[0]=(ver<<5)+n;
     memcpy(result+1,salt,8);
     memcpy(result+9,secret,ret_len);
     free(secret);	// do not forget to free it.
-    
+
     // finally, we return the hex string. easiler for debug and show
     std::string retStr=HexStr(&result[0],&result[1+8+ret_len],false);
     free(result);
-    
+
     return retStr;
 }
 
@@ -1515,14 +1519,14 @@ int xtalkUsrPirvKeyDecrypt(char *encryptedString, char *pwd, int ver, unsigned c
     // below is the process of D1
     unsigned char v[1];
     v[0]=encryptedData[0];
-    
+
     int version=(v[0]>>5)&0x7;	// only get the high 3 bits' value
     if(version!=ver)
         return -1; // version error
-    
+
     // below is the process of D2
     int n=v[0]&0x1f;	// only get the low 5 bits' value
-    
+
     // below is the process of D3
     unsigned char salt[8];
     unsigned char *secret;
@@ -1530,22 +1534,22 @@ int xtalkUsrPirvKeyDecrypt(char *encryptedString, char *pwd, int ver, unsigned c
     secret=(unsigned char *)malloc(secretLen);
     memcpy(salt,&encryptedData[1],8);
     memcpy(secret,&encryptedData[9],secretLen);
-    
+
     // below is the process of D4
     unsigned char key[256/8];
     xtalkPBKDF2_HMAC_SHA512((unsigned char *)pwd, strlen(pwd), salt, 64, key, 256, n);
-    
+
     // below is the process of D5
     unsigned char *secret_decrypted;
     secret_decrypted=(unsigned char *)malloc(secretLen);
-    
+
     AES_KEY aes_key;
     if(AES_set_decrypt_key(key, sizeof(key) * 8, &aes_key) < 0)
     {
         assert(false);
         return -1;
     }
-    
+
     for(unsigned int i = 0; i < secretLen/AES_BLOCK_SIZE; i++)
     {
         unsigned char out[AES_BLOCK_SIZE];
@@ -1554,27 +1558,27 @@ int xtalkUsrPirvKeyDecrypt(char *encryptedString, char *pwd, int ver, unsigned c
         memcpy(&secret_decrypted[AES_BLOCK_SIZE*i],out, AES_BLOCK_SIZE);
     }
     free(secret);
-    
+
     unsigned char chk[2];
     memcpy(chk,secret_decrypted,2);
     memcpy(usrID,secret_decrypted+2,XTALK_USRID_LEN);
     memcpy(privKey,secret_decrypted+2+XTALK_USRID_LEN,XTALK_PRIVKEY_LEN);
     free(secret_decrypted);
-    
+
     // below is the process of D6
     unsigned char h[64];
     unsigned char usrIDAandPrivKey[XTALK_USRID_LEN+XTALK_PRIVKEY_LEN];
-    
+
     // user id 36bytes
     memcpy(usrIDAandPrivKey,usrID,XTALK_USRID_LEN);
     // privkey 32 bytes
     memcpy(usrIDAandPrivKey+XTALK_USRID_LEN,privKey,XTALK_PRIVKEY_LEN);
-    
+
     xtalkSHA512(usrIDAandPrivKey, XTALK_USRID_LEN+XTALK_PRIVKEY_LEN, h);
-    
+
     if(memcmp(chk,h,2)!=0)
         return 0;
-    
+
     return 1;
 }
 
@@ -1583,13 +1587,13 @@ std::string xtalkUsrPirvKeyEncrypt_String(char *usrID_BtcAddress, char *privKey_
 {
     unsigned char usrID[XTALK_USRID_LEN];
     std::vector<unsigned char> privKey = ParseHex(privKey_HexString);
-    
+
     if(strlen(usrID_BtcAddress) >= XTALK_USRID_LEN || privKey.size()!=XTALK_PRIVKEY_LEN)
         return "error userID or privKey length";
-    
+
     memset(usrID,'\0',XTALK_USRID_LEN);
     strcpy((char *)usrID,usrID_BtcAddress);
-    
+
     return xtalkUsrPirvKeyEncrypt(usrID,&privKey[0],pwd,n,ver);
 }
 
@@ -1598,14 +1602,14 @@ int xtalkUsrPirvKeyDecrypt_String(char *encryptedString, char *pwd, int ver, cha
     unsigned char usrID[XTALK_USRID_LEN];
     unsigned char privKey[XTALK_PRIVKEY_LEN];
     int ret;
-    
+
     memset(usrID,'\0',XTALK_USRID_LEN);
     ret=xtalkUsrPirvKeyDecrypt(encryptedString,pwd,ver,usrID,privKey);
-    
-    strcpy(usrID_BtcAddress,(char *)usrID);	
+
+    strcpy(usrID_BtcAddress,(char *)usrID);
     std::string hexString=HexStr(&privKey[0],&privKey[32],false);
     strcpy(privKey_HexString,hexString.c_str());
-    
+
     return ret;
 }
 using namespace std;
@@ -1622,7 +1626,7 @@ unsigned int EncodeAES( const std::string& password, unsigned char *data, unsign
         assert(false);
         return -1;
     }
-    
+
     unsigned char *data_bak;
     unsigned int ret_len = dataLen;
     if (dataLen % AES_BLOCK_SIZE > 0)
@@ -1632,7 +1636,7 @@ unsigned int EncodeAES( const std::string& password, unsigned char *data, unsign
     data_bak=(unsigned char *)malloc(ret_len);
     memset(data_bak,'\0',ret_len);
     memcpy(data_bak,data,dataLen);
-    
+
     for(unsigned int i = 0; i < ret_len/AES_BLOCK_SIZE; i++)
     {
         unsigned char out[AES_BLOCK_SIZE];
@@ -1641,7 +1645,7 @@ unsigned int EncodeAES( const std::string& password, unsigned char *data, unsign
         memcpy(&out_data[i*AES_BLOCK_SIZE], out, AES_BLOCK_SIZE);
     }
     free(data_bak);
-    
+
     return ret_len;
 }
 
@@ -1653,7 +1657,7 @@ int DecodeAES( const std::string& strPassword, unsigned char *data, unsigned int
         assert(false);
         return 0;
     }
-    
+
     for(unsigned int i = 0; i < dataLen/AES_BLOCK_SIZE; i++)
     {
         unsigned char out[AES_BLOCK_SIZE];
@@ -1683,7 +1687,7 @@ int CreateNewPrivKey(char *privKey)
     CBitcoinSecret btcSecret(key);
 //        sprintf(privKey,"%s",btcSecret.begin());
     sprintf(privKey,"%s",btcSecret.ToString().c_str());
-    
+
     return 0;
 }
 
@@ -1705,9 +1709,9 @@ int GetPubKeyFromPrivKey(char *privKey, char *pubKey)
     CPubKey pubkey  = btcSecret.GetKey().GetPubKey();
     std::vector<unsigned char> vch(pubkey.begin(), pubkey.end());
     std::string pubkeyStr=HexStr(vch);
-    
+
     sprintf(pubKey,"%s",pubkeyStr.c_str());
-    
+
     return 0;
 }
 
@@ -1716,11 +1720,11 @@ int GetScriptPubKeyFromPubKey(char *pubKey, char *ScriptPubKey)
     std::string pubkeyStr = pubKey;
     CPubKey pubkey(ParseHex(pubkeyStr));
     CScript pubkey_script;
-    
+
     pubkey_script.SetDestination(pubkey.GetID());
     string prevout_pubkey=HexStr(pubkey_script.begin(), pubkey_script.end(), false);
     sprintf(ScriptPubKey,"%s",prevout_pubkey.c_str());
-    
+
     return 0;
 }
 
@@ -1730,7 +1734,7 @@ int GetBTCAddrFromPubKey(char *pubKey, char *address)
     CPubKey pubkey(ParseHex(pubkeyStr));
     CBitcoinAddress btcAddr(pubkey.GetID());
     sprintf(address,"%s",btcAddr.ToString().c_str());
-    
+
     return 0;
 }
 
@@ -1789,7 +1793,7 @@ void CreateSeed(unsigned int uSound, char *SeedStr)	//get sound from MIC
     memcpy(&uSeed[30],&uSound,2);
     RAND_bytes(uSeed+32,30);
     memcpy(&uSeed[62],(&uSound)+2,2);
-    
+
     string seedString=HexStr(&uSeed[0],&uSeed[64],false);
     sprintf(SeedStr,"%s",seedString.c_str());
 }
@@ -1797,7 +1801,7 @@ void CreateSeed(unsigned int uSound, char *SeedStr)	//get sound from MIC
 void CreateSeed(unsigned int uSound, char *SeedStr, int seedVersion)	//get sound from MIC
 {
     unsigned char uSeed[33];
-    
+
     if(seedVersion == SEED_VERSION4)	// BIP39  32bytes
     {
         RAND_bytes(uSeed,32);
@@ -1816,7 +1820,7 @@ void CreateSeed(unsigned int uSound, char *SeedStr, int seedVersion)	//get sound
         memcpy(&uSeed[8],&uSound,2);
         RAND_bytes(uSeed+10,8);
         memcpy(&uSeed[16],(&uSound)+2,2);
-        
+
         string seedString=HexStr(&uSeed[0],&uSeed[18],false);
         sprintf(SeedStr,"%s",seedString.c_str());
     }
@@ -1826,7 +1830,7 @@ void CreateSeed(unsigned int uSound, char *SeedStr, int seedVersion)	//get sound
         memcpy(&uSeed[4],&uSound,2);
         RAND_bytes(uSeed+6,2);
         memcpy(&uSeed[7],(&uSound)+2,2);
-        
+
         string seedString=HexStr(&uSeed[0],&uSeed[9],false);
         sprintf(SeedStr,"%s",seedString.c_str());
     }
@@ -1841,7 +1845,7 @@ int EncriptData(char *password, char *dataStr, char **pEncriptedDataStr)
     unsigned char encodedRet[512];
     string pass=password;
     unsigned int encodedRetLen=EncodeAES(password,(unsigned char *)dataStr,strlen(dataStr),encodedRet);
-    
+
     string retString=HexStr(&encodedRet[0],&encodedRet[encodedRetLen],false);
     ret_str=(char *)malloc(retString.size()+1);
     sprintf(ret_str,"%s",retString.c_str());
@@ -1858,11 +1862,11 @@ int DecriptData(char *password, char *dataStr, char **pDecriptedDataStr)
     indata=(unsigned char *)malloc(dataVetor.size()+1);
     for(int i=0;i<dataVetor.size();i++)
         indata[i]=dataVetor[i];
-    
+
     unsigned char outdata[512];
     DecodeAES(password,indata,dataVetor.size(),outdata);
     free(indata);
-    
+
     string decodedRet=(char *)outdata;
     ret_str=(char *)malloc(decodedRet.size()+1);
     sprintf(ret_str,"%s",decodedRet.c_str());
@@ -1875,19 +1879,19 @@ string getMD5(char* str, int length)
 {
     unsigned char sign[16] = {0};
     string ret;
-    
+
     MD5_CTX  md5_ctx;
     MD5_Init(&md5_ctx);
     MD5_Update(&md5_ctx, str, length);
     MD5_Final(sign, &md5_ctx);
-    
+
     char output[33] = {0};
     int j;
     for( j = 0; j < 16; j++ )
     {
         sprintf( output + j * 2, "%02x", sign[j] );
     }
-    
+
     output[32]='\0';
     ret=output;
     return ret;
@@ -1898,19 +1902,19 @@ int EncriptWithMD5(char *pass, char *seedStr, char *encriptedSeed)
     string aes_pass;
     char privKeyHash160[64];
     GetHash160(seedStr,privKeyHash160);
-    
+
     char privKeyAndHash160[512];
     sprintf(privKeyAndHash160,"%s:MD5:%s",seedStr,privKeyHash160);
-    
+
     aes_pass=getMD5(pass,strlen(pass));
-    
+
     char *encriptPrivKey;
     EncriptData((char *)(aes_pass.c_str()),privKeyAndHash160,&encriptPrivKey);
     string encriptPrivKeyStr=encriptPrivKey;
     free(encriptPrivKey);
     sprintf(encriptedSeed,"%s",encriptPrivKeyStr.c_str());
     return 0;
-    
+
 }
 
 int DecriptAndCheckMD5(char *pass, char *encriptedSeed, char *seedStr)
@@ -1918,34 +1922,34 @@ int DecriptAndCheckMD5(char *pass, char *encriptedSeed, char *seedStr)
     // here , we need 16 bytes password, if user's pass is less than 16 bytes, we expand pass to 16 bytes
     string aes_pass;
     aes_pass=getMD5(pass,strlen(pass));
-    
+
     char privKeyAndHash160[256];
     char *decriptPrivKey;	// Must same as PRIVKEY_DATA
     DecriptData((char *)(aes_pass.c_str()),encriptedSeed,&decriptPrivKey);
     string decriptPrivKeyStr=decriptPrivKey;
     free(decriptPrivKey);
     sprintf(privKeyAndHash160,"%s",decriptPrivKeyStr.c_str());
-    
+
     char privKeyData[256];
     char MD5_hash160[64];
     char *pMD5_begin;
     pMD5_begin=strstr(privKeyAndHash160,":MD5:");
     if(!pMD5_begin)
         return -1;	// ERROR
-    
+
     int privkeyLen=strlen(privKeyAndHash160)-strlen(pMD5_begin);
     memcpy(privKeyData,privKeyAndHash160,privkeyLen);
     privKeyData[privkeyLen]='\0';
-    
+
     pMD5_begin+=5;	// jump over :MD5: , 5 bytes
-    
+
     int MD5_hash160Len=strlen(pMD5_begin);
     if(MD5_hash160Len != 40)	// HASH160 's hex string length must be 40 bytes
         return -1;
-    
+
     memcpy(MD5_hash160,pMD5_begin,MD5_hash160Len);
     MD5_hash160[MD5_hash160Len]='\0';
-    
+
     char privKeyHash160[64];
     GetHash160(privKeyData,privKeyHash160);
     if(strcmp(privKeyHash160,MD5_hash160)==0)
@@ -1954,7 +1958,7 @@ int DecriptAndCheckMD5(char *pass, char *encriptedSeed, char *seedStr)
         return 0;
     }
     return -1;	// ERROR
-    
+
 }
 
 /*
@@ -1970,16 +1974,16 @@ int GetExPubKeyFromSeed(char *SeedStr, char *ExPubKey)
     CExtKey Exkey;
     CExtPubKey Expubkey;
     std::vector<unsigned char> seed = ParseHex(SeedStr);
-    
+
     Exkey.SetMaster(&seed[0], seed.size());
     Expubkey=Exkey.Neuter();
-    
+
     unsigned char data[76];
     Expubkey.Encode(data);
     std::vector<unsigned char> vch(&data[0], &data[74]);
     string pubkeyStr=HexStr(vch);
     sprintf(ExPubKey,"%s",pubkeyStr.c_str());
-    
+
     return 0;
 }
 
@@ -1988,7 +1992,7 @@ int GetPrivKeyFromSeed(char *SeedStr, unsigned int N, char *PrivKey)
     CExtKey Exkey;
     std::vector<unsigned char> seed = ParseHex(SeedStr);
     Exkey.SetMaster(&seed[0], seed.size());
-    
+
     CExtKey privkeyNew;
     CBitcoinSecret btcSecret;
     Exkey.Derive(privkeyNew, N);
@@ -2005,13 +2009,13 @@ int GetAddrFromExPubKey(char *ExPubKeyStr, unsigned int N, char *address)
     for(int i=0;i<74;i++)
         data[i]=ExPubKeyRawData[i];
     Expubkey.Decode(data);
-    
+
     CExtPubKey pubkeyNew;
     Expubkey.Derive(pubkeyNew, N);
-    
+
     CBitcoinAddress btcAddr(pubkeyNew.pubkey.GetID());
     sprintf(address,"%s",btcAddr.ToString().c_str());
-    
+
     return 0;
 }
 //
@@ -2047,17 +2051,17 @@ int HmacEncode(const char * algo,
         cout << "Algorithm " << algo << " is not supported by this program!" << endl;
         return -1;
     }
-    
+
     output = (unsigned char*)malloc(EVP_MAX_MD_SIZE);
-    
+
     HMAC_CTX ctx;
     HMAC_CTX_init(&ctx);
     HMAC_Init_ex(&ctx, key, strlen(key), engine, NULL);
     HMAC_Update(&ctx, (unsigned char*)input, strlen(input));        // input is OK; &input is WRONG !!!
-    
+
     HMAC_Final(&ctx, output, &output_length);
     HMAC_CTX_cleanup(&ctx);
-    
+
     return 0;
 }
 
@@ -2069,7 +2073,7 @@ int CheckAddress(char *addr)
     {
         return -1;
     }
-    
+
     return 0;
 }
 
@@ -2086,7 +2090,7 @@ int CheckPrivKey(char *privKey)
     }
     if(btcSecret.IsValid())
         return 0;
-    
+
     return -1;
 }
 
@@ -2097,23 +2101,23 @@ int GetPubKeyFromSeedEx(char *SeedStr, char *PubKey, int type1, int type2, int i
     CExtKey Exkey;
     CExtPubKey Expubkey;
     std::vector<unsigned char> seed = ParseHex(SeedStr);
-    
+
     Exkey.SetMaster(&seed[0], seed.size());
     Expubkey=Exkey.Neuter();
-    
+
     CExtPubKey pubkey1;
     Expubkey.Derive(pubkey1, type1);
-    
+
     CExtPubKey pubkey2;
     pubkey1.Derive(pubkey2, type2);
-    
+
     CExtPubKey pubkey3;
     pubkey2.Derive(pubkey3, index);
-    
+
     CPubKey pubkey  = pubkey3.pubkey;
     std::vector<unsigned char> vch(pubkey.begin(), pubkey.end());
     std::string pubkeyStr=HexStr(vch);
-    
+
     sprintf(PubKey,"%s",pubkeyStr.c_str());
     return 0;
 }
@@ -2123,20 +2127,20 @@ int GetPrivKeyFromSeedEx(char *SeedStr, char *PrivKey, int type1, int type2, int
     CExtKey Exkey;
     std::vector<unsigned char> seed = ParseHex(SeedStr);
     Exkey.SetMaster(&seed[0], seed.size());
-    
+
     CExtKey privkeyNew;
     Exkey.Derive(privkeyNew, type1);
-    
+
     CExtKey privkeyNew2;
     privkeyNew.Derive(privkeyNew2, type2);
-    
+
     CExtKey privkeyNew3;
     privkeyNew2.Derive(privkeyNew3, index);
-    
+
     CBitcoinSecret btcSecret;
     btcSecret.SetKey(privkeyNew3.key);
     sprintf(PrivKey,"%s",btcSecret.ToString().c_str());
-    
+
     return 0;
 }
 
@@ -2159,7 +2163,7 @@ int EncodeZipToString(unsigned char *zipData, int len, char **outStr)
     std::string output=EncodeBase64(zipData, len);
     *outStr=(char *)malloc(output.size()+1);
     sprintf(*outStr,"%s",output.c_str());
-    
+
     return 0;
 }
 
@@ -2168,10 +2172,10 @@ int DecodeStringToZip(char *outStr, unsigned char **zipData, int* plen)
     unsigned char *output;
     bool Invalid;
     std::vector<unsigned char> vch=DecodeBase64(outStr,&Invalid);
-    
+
     if(Invalid)
         return -1;
-    
+
     *zipData=(unsigned char *)malloc(vch.size());
     output=*zipData;
     for(int i=0;i<vch.size();i++)
@@ -2189,21 +2193,21 @@ int GetPubKeyFromSeedVector(char *SeedStr, char *PubKey, vector<int> index)
     CExtKey Exkey;
     CExtPubKey Expubkey;
     std::vector<unsigned char> seed = ParseHex(SeedStr);
-    
+
     Exkey.SetMaster(&seed[0], seed.size());
     Expubkey=Exkey.Neuter();
-    
+
     for(int i=0;i<index.size();i++)
     {
         CExtPubKey pubkey1;
         Expubkey.Derive(pubkey1, index[i]);
         Expubkey=pubkey1;
     }
-    
+
     CPubKey pubkey  = Expubkey.pubkey;
     std::vector<unsigned char> vch(pubkey.begin(), pubkey.end());
     std::string pubkeyStr=HexStr(vch);
-    
+
     sprintf(PubKey,"%s",pubkeyStr.c_str());
     return 0;
 }
@@ -2213,18 +2217,18 @@ int GetPrivKeyFromSeedVector(char *SeedStr, char *PrivKey, vector<int> index)
     CExtKey Exkey;
     std::vector<unsigned char> seed = ParseHex(SeedStr);
     Exkey.SetMaster(&seed[0], seed.size());
-    
+
     for(int i=0;i<index.size();i++)
     {
         CExtKey privkeyNew;
         Exkey.Derive(privkeyNew, index[i]);
         Exkey=privkeyNew;
     }
-    
+
     CBitcoinSecret btcSecret;
     btcSecret.SetKey(Exkey.key);
     sprintf(PrivKey,"%s",btcSecret.ToString().c_str());
-    
+
     return 0;
 }
 
@@ -2233,21 +2237,21 @@ int GetPubKeyFromSeedEx2(char *SeedStr, char *PubKey, int *pIndex, int num)
     CExtKey Exkey;
     CExtPubKey Expubkey;
     std::vector<unsigned char> seed = ParseHex(SeedStr);
-    
+
     Exkey.SetMaster(&seed[0], seed.size());
     Expubkey=Exkey.Neuter();
-    
+
     for(int i=0;i<num;i++)
     {
         CExtPubKey pubkey1;
         Expubkey.Derive(pubkey1, pIndex[i]);
         Expubkey=pubkey1;
     }
-    
+
     CPubKey pubkey  = Expubkey.pubkey;
     std::vector<unsigned char> vch(pubkey.begin(), pubkey.end());
     std::string pubkeyStr=HexStr(vch);
-    
+
     sprintf(PubKey,"%s",pubkeyStr.c_str());
     return 0;
 }
@@ -2257,18 +2261,18 @@ int GetPrivKeyFromSeedEx2(char *SeedStr, char *PrivKey, int *pIndex, int num)
     CExtKey Exkey;
     std::vector<unsigned char> seed = ParseHex(SeedStr);
     Exkey.SetMaster(&seed[0], seed.size());
-    
+
     for(int i=0;i<num;i++)
     {
         CExtKey privkeyNew;
         Exkey.Derive(privkeyNew, pIndex[i]);
         Exkey=privkeyNew;
     }
-    
+
     CBitcoinSecret btcSecret;
     btcSecret.SetKey(Exkey.key);
     sprintf(PrivKey,"%s",btcSecret.ToString().c_str());
-    
+
     return 0;
 }
 
@@ -2279,29 +2283,29 @@ int GetPrivKeyFromSeedBIP44(const char *SeedStr, char *PrivKey, unsigned int pur
     CExtKey Exkey;
     std::vector<unsigned char> seed = ParseHex(SeedStr);
     Exkey.SetMaster(&seed[0], seed.size());
-    
+
     CExtKey privkey1;
     purpose |= 0x80000000;
     Exkey.Derive(privkey1, purpose);
-    
+
     CExtKey privkey2;
     coin |= 0x80000000;
     privkey1.Derive(privkey2, coin);
-    
+
     CExtKey privkey3;
     account |= 0x80000000;
     privkey2.Derive(privkey3, account);
-    
+
     CExtKey privkey4;
     privkey3.Derive(privkey4, isInternal);
-    
+
     CExtKey privkey5;
     privkey4.Derive(privkey5, addrIndex);
-    
+
     CBitcoinSecret btcSecret;
     btcSecret.SetKey(privkey5.key);
     sprintf(PrivKey,"%s",btcSecret.ToString().c_str());
-    
+
     return 0;
 }
 
@@ -2311,30 +2315,30 @@ int GetPubKeyFromSeedBIP44(const char *SeedStr, char *PubKey, unsigned int purpo
     CExtKey Exkey;
     std::vector<unsigned char> seed = ParseHex(SeedStr);
     Exkey.SetMaster(&seed[0], seed.size());
-    
+
     CExtKey privkey1;
     purpose |= 0x80000000;
     Exkey.Derive(privkey1, purpose);
-    
+
     CExtKey privkey2;
     coin |= 0x80000000;
     privkey1.Derive(privkey2, coin);
-    
+
     CExtKey privkey3;
     account |= 0x80000000;
     privkey2.Derive(privkey3, account);
-    
+
     Expubkey=privkey3.Neuter();
     CExtPubKey pubkey4;
     Expubkey.Derive(pubkey4, isInternal);
-    
+
     CExtPubKey pubkey5;
     pubkey4.Derive(pubkey5, addrIndex);
-    
+
     CPubKey pubkey  = pubkey5.pubkey;
     std::vector<unsigned char> vch(pubkey.begin(), pubkey.end());
     std::string pubkeyStr=HexStr(vch);
-    
+
     sprintf(PubKey,"%s",pubkeyStr.c_str());
     return 0;
 }
@@ -2346,22 +2350,22 @@ int GetAccountMasterPubKeyFromSeedBIP44(const char *SeedStr, char *masterPubKey,
     CExtKey Exkey;
     std::vector<unsigned char> seed = ParseHex(SeedStr);
     Exkey.SetMaster(&seed[0], seed.size());
-    
+
     CExtKey privkey1;
     purpose |= 0x80000000;
     Exkey.Derive(privkey1, purpose);
-    
+
     CExtKey privkey2;
     coin |= 0x80000000;
     privkey1.Derive(privkey2, coin);
-    
+
     CExtKey privkey3;
     account |= 0x80000000;
     privkey2.Derive(privkey3, account);
-    
+
     Expubkey=privkey3.Neuter();
     Expubkey.Encode(code);
-    
+
     std::string pubkeyStr=HexStr(&code[0],&code[74],false);
     sprintf(masterPubKey,"%s",pubkeyStr.c_str());
     return 0;
@@ -2372,25 +2376,25 @@ int GetPubKeyFromAccountMasterPubKeyBIP44(const char *masterPubKey, char *PubKey
     std::vector<unsigned char> master_Pubkey = ParseHex(masterPubKey);
     unsigned char code[74];
     CExtPubKey Expubkey;
-    
+
     if(master_Pubkey.size()!=74)
         return -1;
-    
+
     for(int i=0;i<74;i++)
         code[i]=master_Pubkey[i];
-    
+
     Expubkey.Decode(code);
-    
+
     CExtPubKey pubkey4;
     Expubkey.Derive(pubkey4, isInternal);
-    
+
     CExtPubKey pubkey5;
     pubkey4.Derive(pubkey5, addrIndex);
-    
+
     CPubKey pubkey  = pubkey5.pubkey;
     std::vector<unsigned char> vch(pubkey.begin(), pubkey.end());
     std::string pubkeyStr=HexStr(vch);
-    
+
     sprintf(PubKey,"%s",pubkeyStr.c_str());
     return 0;
 }
@@ -2410,13 +2414,13 @@ int GetBIP39WordsFromSeed(char *Seedstr, char *wordsStr)
     uint8_t seed_bytes[64];
     int i;
     std::vector<unsigned char> seed = ParseHex(Seedstr);
-    
+
     for(i=0;i<seed.size();i++)
         seed_bytes[i]=seed[i];
-    
+
     wordstring=mnemonic_from_data(seed_bytes,seed.size());
     sprintf(wordsStr,"%s",wordstring.c_str());
-    
+
     return 0;
 }
 
@@ -2433,7 +2437,7 @@ void GetHash256Str(char *indata, char *outhashstr)
 
 int SignHash(char *privKey, char *hashHexStr, char *signStr)
 {
-    
+
     CBitcoinSecret btcSecret;
     if(!btcSecret.SetString (privKey))
     {
@@ -2443,7 +2447,7 @@ int SignHash(char *privKey, char *hashHexStr, char *signStr)
     CKey key  = btcSecret.GetKey();
     uint256 hashMsg;
     hashMsg.SetHex(hashHexStr);
-    
+
     // normal signatures
     vector<unsigned char> sign;
     if(!key.Sign (hashMsg, sign))
@@ -2451,7 +2455,7 @@ int SignHash(char *privKey, char *hashHexStr, char *signStr)
         printf("Error : key1.Sign (hashMsg, sign1)\n");
         return 2;
     }
-    
+
     string signstring=HexStr(sign.begin(), sign.end());
     sprintf(signStr,"%s",signstring.c_str());
     return 0;
@@ -2464,7 +2468,7 @@ int VerifySign(char *pubKey, char *hashHexStr, char *signStr)
     std::vector<unsigned char> sign = ParseHex(signStr);
     std::string pubkeyStr = pubKey;
     CPubKey pubkey(ParseHex(pubkeyStr));
-    
+
     if(! pubkey.Verify(hashMsg, sign))
     {
         printf("Error : pubkey1.Verify(hashMsg, sign1C)\n");
@@ -2512,7 +2516,7 @@ int GetRawPrivKey(char *rawPrivKey, char *privKey)
     CKey pkey  = btcSecret.GetKey();
     std::vector<unsigned char> vch(pkey.begin(), pkey.end());
     std::string pkeyStr=HexStr(vch);
-    
+
     sprintf(rawPrivKey,"%s",pkeyStr.c_str());
 //    printf("rawPrivKey is :%s\n",rawPrivKey);
     return 0;
@@ -2523,15 +2527,15 @@ int ECC_encryptEx(char *privKey, char *pubKey, char *input, char **encryptedStri
 {
     char rawPrivKey[256];
     secure_t *ciphered = NULL;
-    
+
     GetRawPrivKey(rawPrivKey,privKey);
-    
+
     if (!(ciphered = ecies_encryptEx(rawPrivKey, pubKey, (unsigned char *)input, strlen(input)+1)))
     {
         printf("The encryption process failed!\n");
         return -1;
     }
-    
+
     std::string outputStr=HexStr((unsigned char *)ciphered, (unsigned char *)ciphered+secure_total_length(ciphered), false);
     *encryptedString=(char *)malloc(outputStr.size()+1);
     sprintf(*encryptedString,"%s",outputStr.c_str());
@@ -2550,15 +2554,15 @@ int ECC_decryptEx(char *privKey, char *pubKey, char *encrypted, char **outputStr
     ciphered=(secure_t *)malloc(ciphervec.size());
     for(i=0;i<ciphervec.size();i++)
         *((unsigned char *)ciphered+i)=ciphervec[i];
-    
+
     GetRawPrivKey(rawPrivKey,privKey);
-    
+
     if (!(original = ecies_decryptEx(rawPrivKey, pubKey, ciphered, &olen)))
     {
         printf("The decryption process failed!\n");
         return -1;
     }
-    
+
     *outputStr=(char *)original;
     free(ciphered);
     return 0;
@@ -2589,11 +2593,11 @@ void xtalkPBKDF2_HMAC_SHA512(unsigned char *pass, int passLen, unsigned char *sa
         salt_c = (const char *)salt.bytes;
     }
     unsigned char outKey[256/8];
-    
+
     xtalkPBKDF2_HMAC_SHA512((unsigned char*)ecdhKey_c, (int)ecdhKey.length, (unsigned char*)salt_c, 512, outKey, 256, 12);
 
     NSData *data = [NSData dataWithBytes:outKey length:32];
-    
+
     return  data;
 }
 
