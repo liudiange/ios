@@ -30,6 +30,7 @@
 #define LMBasicSuccessLableColor    LMBasicGreen
 #define LMBasicBackgroundColor      LMBasicLightGray
 #define LMBasicSmallMessageColor    LMBasicBackGroudDarkGray
+#define LMBasicCircleColor          GJCFQuickHexColor(@"CECECE")
 
 #define LMBasicPacketStatusRed      GJCFQuickHexColor(@"ff6c5a")
 #define LMBasicPacketStatusBlue     GJCFQuickHexColor(@"007aff")

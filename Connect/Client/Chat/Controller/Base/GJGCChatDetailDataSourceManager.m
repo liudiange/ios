@@ -925,7 +925,6 @@
         }
     }
 
-    
     //update conversion
     [[LMConversionManager sharedManager] sendMessage:message type:self.taklInfo.talkType];
     

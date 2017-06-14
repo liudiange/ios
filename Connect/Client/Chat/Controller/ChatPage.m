@@ -16,7 +16,6 @@
 #import "SystemMessageHandler.h"
 #import "BadgeNumberManager.h"
 #import "UITabBar+Reddot.h"
-#import "LMRegisterPrivkeyBackupTipView.h"
 #import "AppDelegate.h"
 #import "LMConversionManager.h"
 #import "SystemTool.h"
@@ -151,8 +150,6 @@
     self.navigationItem.titleView = self.titleView;
     [self onConnectState:0];
 
-    [self showFristRegisterBackupTipView];
-
     //conversion  monitor
     [LMConversionManager sharedManager].conversationListDelegate = self;
     [[LMConversionManager sharedManager] getAllConversationFromDB];
@@ -171,18 +168,6 @@
 
 - (void)unreadMessageNumberDidChangedNeedSyncbadge {
     [self updateBarBadgeIsNeedSyncBadge:YES];
-}
-
-- (void)showFristRegisterBackupTipView {
-    if ([LKUserCenter shareCenter].isFristLogin) {
-        LMRegisterPrivkeyBackupTipView *registerPrivkeyTipView = [[[NSBundle mainBundle] loadNibNamed:@"LMRegisterPrivkeyBackupTipView" owner:nil options:nil] lastObject];
-        AppDelegate *app = (AppDelegate *) [UIApplication sharedApplication].delegate;
-        UIWindow *window = app.window;
-        registerPrivkeyTipView.frame = [UIScreen mainScreen].bounds;
-        registerPrivkeyTipView.controller = self;
-        [window addSubview:registerPrivkeyTipView];
-        [window bringSubviewToFront:registerPrivkeyTipView];
-    }
 }
 
 - (void)addNotification {
@@ -210,17 +195,13 @@
         if (buttonIndex != 0) { //tap update
             if ([SystemTool isNationChannel]) {
                 if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10.0")) {
-                    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:nationalAppDownloadUrl] options:nil completionHandler:^(BOOL success) {
-
-                    }];
+                    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:nationalAppDownloadUrl] options:nil completionHandler:nil];
                 } else {
                     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:nationalAppDownloadUrl]];
                 }
             } else {
                 if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10.0")) {
-                    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:appstoreAppDownloadUrl] options:nil completionHandler:^(BOOL success) {
-
-                    }];
+                    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:appstoreAppDownloadUrl] options:nil completionHandler:nil];
                 } else {
                     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:appstoreAppDownloadUrl]];
                 }

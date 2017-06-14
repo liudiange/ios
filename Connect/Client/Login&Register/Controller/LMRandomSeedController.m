@@ -12,9 +12,9 @@
 #import "LMDisplayProgressView.h"
 #import "StringTool.h"
 
-#define DisplayTime (5.0*60)
-#define FaliCount 3
-#define CheckNum  -70
+#define DIS_PLAY_TIME (5.0*60)
+#define FAILE_COUNT 3
+#define CHECK_NUM  -70
 
 @interface LMRandomSeedController ()
 // xib attribute
@@ -115,13 +115,13 @@
         progressView.radius = 35.5;
         progressView.circleRadius = progressView.radius + progressView.progressWidth;
         progressView.circleWidth = 0.5;
-        progressView.circleColor = GJCFQuickHexColor(@"CECECE");
+        progressView.circleColor = LMBasicCircleColor;
         progressView.isCircle = YES;
         [self.view addSubview:progressView];
         self.progressView = progressView;
         // set lable
         self.displayLable.font = [UIFont systemFontOfSize:FONT_SIZE(24)];
-        self.displayLable.textColor = GJCFQuickHexColor(@"767A82");
+        self.displayLable.textColor = LMBasicTextFieldeColor;
         // begin link
         [self startLink];
     }
@@ -237,22 +237,22 @@
     }
 }
 
-#pragma 定时器方法响应
+#pragma Timer method response
 
 - (void)changeProgressViewValue {
     [self.recoder updateMeters];
     if (self.bCanRecord == NO) return;
     // failure 3 detail
-    if (self.faileCount >= FaliCount) {
+    if (self.faileCount >= FAILE_COUNT) {
         [self faileure3Action];
     }
     // count
     self.count += 1;
-    if (self.count >= DisplayTime) {
-        self.count = DisplayTime;
+    if (self.count >= DIS_PLAY_TIME) {
+        self.count = DIS_PLAY_TIME;
     }
     // display progress
-    self.progressView.progress = self.count / DisplayTime;
+    self.progressView.progress = self.count / DIS_PLAY_TIME;
     if (self.progressView.progress <= 0.5) {
         // expect array
         [self exceptAction];
@@ -294,7 +294,7 @@
         CGFloat newValue = indexValue * ((CGFloat) numberCount / (CGFloat) count);
         resultValue += newValue;
     }
-    if (resultValue > CheckNum) {
+    if (resultValue > CHECK_NUM) {
         return YES;
     }
     return NO;

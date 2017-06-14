@@ -21,8 +21,6 @@
 		19234F421E8113D60022D844 /* CaptureAvatarPage.m in Sources */ = {isa = PBXBuildFile; fileRef = 19234F291E8113D60022D844 /* CaptureAvatarPage.m */; };
 		19234F441E8113D60022D844 /* LMRandomSeedController.m in Sources */ = {isa = PBXBuildFile; fileRef = 19234F2D1E8113D60022D844 /* LMRandomSeedController.m */; };
 		19234F451E8113D60022D844 /* LMRandomSeedController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 19234F2E1E8113D60022D844 /* LMRandomSeedController.xib */; };
-		19234F461E8113D60022D844 /* LMRegisterPrivkeyBackupTipView.m in Sources */ = {isa = PBXBuildFile; fileRef = 19234F301E8113D60022D844 /* LMRegisterPrivkeyBackupTipView.m */; };
-		19234F471E8113D60022D844 /* LMRegisterPrivkeyBackupTipView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 19234F311E8113D60022D844 /* LMRegisterPrivkeyBackupTipView.xib */; };
 		19234F491E8113D60022D844 /* LocalAccountLoginPage.m in Sources */ = {isa = PBXBuildFile; fileRef = 19234F351E8113D60022D844 /* LocalAccountLoginPage.m */; };
 		19234F4A1E8113D60022D844 /* PhoneLoginPage.m in Sources */ = {isa = PBXBuildFile; fileRef = 19234F371E8113D60022D844 /* PhoneLoginPage.m */; };
 		19234F4B1E8113D60022D844 /* RegisteredPrivkeyLoginPage.m in Sources */ = {isa = PBXBuildFile; fileRef = 19234F391E8113D60022D844 /* RegisteredPrivkeyLoginPage.m */; };
@@ -1078,9 +1076,6 @@
 		19234F2C1E8113D60022D844 /* LMRandomSeedController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMRandomSeedController.h; sourceTree = "<group>"; };
 		19234F2D1E8113D60022D844 /* LMRandomSeedController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LMRandomSeedController.m; sourceTree = "<group>"; };
 		19234F2E1E8113D60022D844 /* LMRandomSeedController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LMRandomSeedController.xib; sourceTree = "<group>"; };
-		19234F2F1E8113D60022D844 /* LMRegisterPrivkeyBackupTipView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMRegisterPrivkeyBackupTipView.h; sourceTree = "<group>"; };
-		19234F301E8113D60022D844 /* LMRegisterPrivkeyBackupTipView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LMRegisterPrivkeyBackupTipView.m; sourceTree = "<group>"; };
-		19234F311E8113D60022D844 /* LMRegisterPrivkeyBackupTipView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LMRegisterPrivkeyBackupTipView.xib; sourceTree = "<group>"; };
 		19234F341E8113D60022D844 /* LocalAccountLoginPage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalAccountLoginPage.h; sourceTree = "<group>"; };
 		19234F351E8113D60022D844 /* LocalAccountLoginPage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalAccountLoginPage.m; sourceTree = "<group>"; };
 		19234F361E8113D60022D844 /* PhoneLoginPage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoneLoginPage.h; sourceTree = "<group>"; };
@@ -14717,9 +14712,6 @@
 				19234F2C1E8113D60022D844 /* LMRandomSeedController.h */,
 				19234F2D1E8113D60022D844 /* LMRandomSeedController.m */,
 				19234F2E1E8113D60022D844 /* LMRandomSeedController.xib */,
-				19234F2F1E8113D60022D844 /* LMRegisterPrivkeyBackupTipView.h */,
-				19234F301E8113D60022D844 /* LMRegisterPrivkeyBackupTipView.m */,
-				19234F311E8113D60022D844 /* LMRegisterPrivkeyBackupTipView.xib */,
 				19234F341E8113D60022D844 /* LocalAccountLoginPage.h */,
 				19234F351E8113D60022D844 /* LocalAccountLoginPage.m */,
 				19234F361E8113D60022D844 /* PhoneLoginPage.h */,
@@ -32314,7 +32306,6 @@
 				D9B4365D1E8E5366006C816C /* LanguageConfig.plist in Resources */,
 				D922303C1E822A3100D67110 /* love_shock@3x.png in Resources */,
 				F16FD80B1EC3205F002F9395 /* set in Resources */,
-				19234F471E8113D60022D844 /* LMRegisterPrivkeyBackupTipView.xib in Resources */,
 				D9222F6F1E822A3000D67110 /* gestures.plist in Resources */,
 				F16FD80A1EC3205F002F9395 /* regex in Resources */,
 				D9222D931E822A1800D67110 /* PhoneRegisterCell.xib in Resources */,
@@ -32990,7 +32981,6 @@
 				D92232691E822BF800D67110 /* TBActionContainer.m in Sources */,
 				D95C03701E8108D8006C5C8A /* LMVerifyTableHeadView.m in Sources */,
 				19234F6E1E81160A0022D844 /* SearchPage.m in Sources */,
-				19234F461E8113D60022D844 /* LMRegisterPrivkeyBackupTipView.m in Sources */,
 				D9222F871E822A3000D67110 /* NSArray+MASAdditions.m in Sources */,
 				D92232F41E822BF900D67110 /* GJCFStringUitil.m in Sources */,
 				D95C03761E8108D8006C5C8A /* SelectContactCardController.m in Sources */,

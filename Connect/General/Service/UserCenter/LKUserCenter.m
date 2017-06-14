@@ -113,35 +113,35 @@ static LKUserCenter *center = nil;
             [BaseDB migrationWithUserPublicKey:loginUser.pub_key];
             
             privkey = loginUser.prikey;
-            if (GJCFStringIsNull(loginUser.address)) { // May be swept of the user information
-                //
-                loginUser.address = [KeyHandle getAddressByPrivKey:privkey];
-                loginUser.pub_key = [KeyHandle createPubkeyByPrikey:privkey];
-                loginUser.isSelected = NO;
-                // Download avatar
-                SearchUser *usrAddInfo = [[SearchUser alloc] init];
-                usrAddInfo.criteria = loginUser.address;
-                [NetWorkOperationTool POSTWithUrlString:ContactUserSearchUrl postProtoData:usrAddInfo.data complete:^(id response) {
-                    HttpResponse *hResponse = (HttpResponse *)response;
-                    
-                    if (hResponse.code != successCode) {
-                        DDLogError(@"失败");
-                        return;
-                    }
-                    NSData* data =  [ConnectTool decodeHttpResponse:hResponse];
-                    if (data) {
-                        UserInfo *user = [UserInfo parseFromData:data error:nil];
-                        DDLogInfo(@"%@",user);
-                        loginUser.avatar = user.avatar;
-                        loginUser.lastLoginTime = [[NSDate date] timeIntervalSince1970];
-                        //保存keyChain
-                        [[MMAppSetting sharedSetting] saveUserToKeyChain:loginUser];
-                    }
-                } fail:^(NSError *error) {
-                    
-                }];
-                
-            }
+//            if (GJCFStringIsNull(loginUser.address)) { // May be swept of the user information
+//                //
+//                loginUser.address = [KeyHandle getAddressByPrivKey:privkey];
+//                loginUser.pub_key = [KeyHandle createPubkeyByPrikey:privkey];
+//                loginUser.isSelected = NO;
+//                // Download avatar
+//                SearchUser *usrAddInfo = [[SearchUser alloc] init];
+//                usrAddInfo.criteria = loginUser.address;
+//                [NetWorkOperationTool POSTWithUrlString:ContactUserSearchUrl postProtoData:usrAddInfo.data complete:^(id response) {
+//                    HttpResponse *hResponse = (HttpResponse *)response;
+//                    
+//                    if (hResponse.code != successCode) {
+//                        DDLogError(@"失败");
+//                        return;
+//                    }
+//                    NSData* data =  [ConnectTool decodeHttpResponse:hResponse];
+//                    if (data) {
+//                        UserInfo *user = [UserInfo parseFromData:data error:nil];
+//                        DDLogInfo(@"%@",user);
+//                        loginUser.avatar = user.avatar;
+//                        loginUser.lastLoginTime = [[NSDate date] timeIntervalSince1970];
+//                        //保存keyChain
+//                        [[MMAppSetting sharedSetting] saveUserToKeyChain:loginUser];
+//                    }
+//                } fail:^(NSError *error) {
+//                    
+//                }];
+//                
+//            }
             // Call the login page
             [GCDQueue executeInMainQueue:^{
                 AppDelegate *app = (AppDelegate *)[UIApplication sharedApplication].delegate;
@@ -184,11 +184,11 @@ static LKUserCenter *center = nil;
             }
             
             // Initialize the purse balance
-            [WallteNetWorkTool queryAmountByAddress:loginUser.address complete:^(NSError *erro, long long amount, NSString *errorMsg) {
-                if (GJCFStringIsNull(errorMsg)) {
-                    [[MMAppSetting sharedSetting] saveBalance:amount];
-                }
-            }];
+//            [WallteNetWorkTool queryAmountByAddress:loginUser.address complete:^(NSError *erro, long long amount, NSString *errorMsg) {
+//                if (GJCFStringIsNull(errorMsg)) {
+//                    [[MMAppSetting sharedSetting] saveBalance:amount];
+//                }
+//            }];
             
         }
     } else{
