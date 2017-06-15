@@ -55,7 +55,7 @@ static ServerCenter *center = nil;
 }
 
 - (NSString *)getCurrentServer_userEcdhkey{
-    NSString *ecdhkey = [KeyHandle getECDHkeyUsePrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey PublicKey:[self getCurrentServer].data.pub_key];
+    NSString *ecdhkey = [LMIMHelper getECDHkeyUsePrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey PublicKey:[self getCurrentServer].data.pub_key];
                          
 
     return ecdhkey;

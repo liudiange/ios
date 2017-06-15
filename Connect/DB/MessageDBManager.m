@@ -118,7 +118,7 @@ static MessageDBManager *manager = nil;
 
     NSString *aad = [[NSString stringWithFormat:@"%d", arc4random() % 100 + 1000] sha1String];
     NSString *iv = [[NSString stringWithFormat:@"%d", arc4random() % 100 + 1000] sha1String];
-    NSDictionary *encodeDict = [KeyHandle xtalkEncodeAES_GCM:[[LKUserCenter shareCenter] getLocalGCDEcodePass] data:messageString aad:aad iv:iv];
+    NSDictionary *encodeDict = [LMIMHelper xtalkEncodeAES_GCM:[[LKUserCenter shareCenter] getLocalGCDEcodePass] data:messageString aad:aad iv:iv];
     NSString *ciphertext = encodeDict[@"encryptedDatastring"];
     NSString *tag = encodeDict[@"tagstring"];
 
@@ -160,7 +160,7 @@ static MessageDBManager *manager = nil;
 
         NSString *aad = [[NSString stringWithFormat:@"%d", arc4random() % 100 + 1000] sha1String];
         NSString *iv = [[NSString stringWithFormat:@"%d", arc4random() % 100 + 1000] sha1String];
-        NSDictionary *encodeDict = [KeyHandle xtalkEncodeAES_GCM:[[LKUserCenter shareCenter] getLocalGCDEcodePass] data:messageString aad:aad iv:iv];
+        NSDictionary *encodeDict = [LMIMHelper xtalkEncodeAES_GCM:[[LKUserCenter shareCenter] getLocalGCDEcodePass] data:messageString aad:aad iv:iv];
         NSString *ciphertext = encodeDict[@"encryptedDatastring"];
         NSString *tag = encodeDict[@"tagstring"];
 
@@ -428,7 +428,7 @@ static MessageDBManager *manager = nil;
         NSString *iv = [contentDict safeObjectForKey:@"iv"];
         NSString *tag = [contentDict safeObjectForKey:@"tag"];
         NSString *ciphertext = [contentDict safeObjectForKey:@"ciphertext"];
-        NSString *messageString = [KeyHandle xtalkDecodeAES_GCM:[[LKUserCenter shareCenter] getLocalGCDEcodePass] data:ciphertext aad:aad iv:iv tag:tag];
+        NSString *messageString = [LMIMHelper xtalkDecodeAES_GCM:[[LKUserCenter shareCenter] getLocalGCDEcodePass] data:ciphertext aad:aad iv:iv tag:tag];
 
         chatMessage.message = [MMMessage mj_objectWithKeyValues:messageString];
         chatMessage.message.sendstatus = chatMessage.sendstatus;
@@ -488,7 +488,7 @@ static MessageDBManager *manager = nil;
         NSString *iv = [contentDict safeObjectForKey:@"iv"];
         NSString *tag = [contentDict safeObjectForKey:@"tag"];
         NSString *ciphertext = [contentDict safeObjectForKey:@"ciphertext"];
-        NSString *messageString = [KeyHandle xtalkDecodeAES_GCM:[[LKUserCenter shareCenter] getLocalGCDEcodePass] data:ciphertext aad:aad iv:iv tag:tag];
+        NSString *messageString = [LMIMHelper xtalkDecodeAES_GCM:[[LKUserCenter shareCenter] getLocalGCDEcodePass] data:ciphertext aad:aad iv:iv tag:tag];
 
         chatMessage.message = [MMMessage mj_objectWithKeyValues:messageString];
         chatMessage.message.sendstatus = chatMessage.sendstatus;
@@ -558,7 +558,7 @@ static MessageDBManager *manager = nil;
         NSString *iv = [contentDict safeObjectForKey:@"iv"];
         NSString *tag = [contentDict safeObjectForKey:@"tag"];
         NSString *ciphertext = [contentDict safeObjectForKey:@"ciphertext"];
-        NSString *messageString = [KeyHandle xtalkDecodeAES_GCM:[[LKUserCenter shareCenter] getLocalGCDEcodePass] data:ciphertext aad:aad iv:iv tag:tag];
+        NSString *messageString = [LMIMHelper xtalkDecodeAES_GCM:[[LKUserCenter shareCenter] getLocalGCDEcodePass] data:ciphertext aad:aad iv:iv tag:tag];
         MMMessage *msg = [MMMessage mj_objectWithKeyValues:messageString];
         msg.sendstatus = chatMessage.sendstatus;
         msg.isRead = chatMessage.readTime > 0;
@@ -608,7 +608,7 @@ static MessageDBManager *manager = nil;
         NSString *iv = [contentDict safeObjectForKey:@"iv"];
         NSString *tag = [contentDict safeObjectForKey:@"tag"];
         NSString *ciphertext = [contentDict safeObjectForKey:@"ciphertext"];
-        NSString *messageString = [KeyHandle xtalkDecodeAES_GCM:[[LKUserCenter shareCenter] getLocalGCDEcodePass] data:ciphertext aad:aad iv:iv tag:tag];
+        NSString *messageString = [LMIMHelper xtalkDecodeAES_GCM:[[LKUserCenter shareCenter] getLocalGCDEcodePass] data:ciphertext aad:aad iv:iv tag:tag];
         MMMessage *msg = [MMMessage mj_objectWithKeyValues:messageString];
         msg.sendstatus = chatMessage.sendstatus;
         msg.isRead = chatMessage.readTime > 0;

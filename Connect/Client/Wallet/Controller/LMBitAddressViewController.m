@@ -185,7 +185,7 @@
 - (void)textFieldDidChange:(UITextField *)textField {
     __weak typeof(self) weakSelf = self;
     if (textField.text.length > 30) {
-        if (![KeyHandle checkAddress:self.addressTextField.text]) {
+        if (![LMIMHelper checkAddress:self.addressTextField.text]) {
             [GCDQueue executeInMainQueue:^{
                 [MBProgressHUD showToastwithText:LMLocalizedString(@"Wallet Result is not a bitcoin address", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
             }];
@@ -202,7 +202,7 @@
         return;
     }
 
-    if (![KeyHandle checkAddress:self.addressTextField.text]) {
+    if (![LMIMHelper checkAddress:self.addressTextField.text]) {
         [GCDQueue executeInMainQueue:^{
             [MBProgressHUD showToastwithText:LMLocalizedString(@"Wallet Result is not a bitcoin address", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
         }];

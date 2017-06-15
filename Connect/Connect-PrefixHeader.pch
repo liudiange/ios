@@ -63,6 +63,7 @@ static const DDLogLevel ddLogLevel = DDLogLevelOff;
 #import "NSString+hash.h"
 #import "RegexKit.h"
 #import "PayTool.h"
+#import "LMIMHelper.h"
 
 //-------- app color --------
 #import "colorConfiguration.h"

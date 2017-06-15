@@ -257,7 +257,7 @@
     if (user) {
         MMMessage *message = [[MessageDBManager sharedManager] createTransactionMessageWithUserInfo:user hashId:hashId monney:amount];
         // Create a session
-        NSString *ecdh = [KeyHandle getECDHkeyUsePrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey PublicKey:user.pub_key];
+        NSString *ecdh = [LMIMHelper getECDHkeyUsePrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey PublicKey:user.pub_key];
         [[RecentChatDBManager sharedManager] createNewChatWithIdentifier:user.pub_key groupChat:NO lastContentShowType:1 lastContent:[GJGCChatFriendConstans lastContentMessageWithType:message.type textMessage:message.content] ecdhKey:ecdh talkName:user.normalShowName];
         [[RecentChatDBManager sharedManager] clearUnReadCountWithIdetifier:user.pub_key];
         // Clear unread

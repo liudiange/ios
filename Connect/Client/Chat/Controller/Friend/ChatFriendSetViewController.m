@@ -18,7 +18,7 @@
 #import "MessageDBManager.h"
 #import "StringTool.h"
 #import "AppDelegate.h"
-#import "LMIMHelper.h"
+
 
 @interface ChatFriendSetViewController ()
 

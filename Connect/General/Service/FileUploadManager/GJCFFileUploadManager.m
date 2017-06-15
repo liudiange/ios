@@ -105,8 +105,8 @@ static dispatch_queue_t _gjcfFileUploadManagerOperationQueue ;
 }
 
 - (NSData *)serverUserEcdhKey{
-    NSData *ecdhKey = [KeyHandle getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey publicKey:[[ServerCenter shareCenter] getCurrentServer].data.pub_key];
-    return [KeyHandle getAes256KeyByECDHKeyAndSalt:ecdhKey salt:[ServerCenter shareCenter].httpTokenSalt];
+    NSData *ecdhKey = [LMIMHelper getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey publicKey:[[ServerCenter shareCenter] getCurrentServer].data.pub_key];
+    return [LMIMHelper getAes256KeyByECDHKeyAndSalt:ecdhKey salt:[ServerCenter shareCenter].httpTokenSalt];
 }
 
 

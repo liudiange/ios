@@ -9,7 +9,6 @@
 #import "SetUserInfoPage.h"
 #import "StringTool.h"
 #import "ConnectButton.h"
-#import "LMIMHelper.h"
 #import "NetWorkOperationTool.h"
 #import "BottomLineTextField.h"
 #import "YYImageCache.h"

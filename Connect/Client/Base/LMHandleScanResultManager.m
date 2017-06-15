@@ -23,7 +23,7 @@
 #import "LocalAccountLoginPage.h"
 #import "SetUserInfoPage.h"
 #import "RegisteredPrivkeyLoginPage.h"
-#import "LMIMHelper.h"
+
 
 #define BIT_COIN_STR @"bitcoin:"
 #define AMOUNT_TIP  @"?amount"

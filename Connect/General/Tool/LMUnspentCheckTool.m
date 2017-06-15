@@ -75,7 +75,7 @@
         return tranction;
     }
     
-    if (GJCFStringIsNull(address) || [KeyHandle checkAddress:address]) {
+    if (GJCFStringIsNull(address) || [LMIMHelper checkAddress:address]) {
         address = [[LKUserCenter shareCenter] currentLoginUser].address;
     }
     

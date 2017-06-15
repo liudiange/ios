@@ -255,7 +255,7 @@
             [[RecentChatDBManager sharedManager] createNewChatWithIdentifier:info.groupIdentifer groupChat:YES lastContentShowType:0 lastContent:[GJGCChatFriendConstans lastContentMessageWithType:message.type textMessage:message.content] ecdhKey:info.groupEcdhKey talkName:nil];
         } else {
             AccountInfo *info = (AccountInfo *) data;
-            NSString *ecdhKey = [KeyHandle getECDHkeyUsePrivkey:[LKUserCenter shareCenter].currentLoginUser.prikey PublicKey:info.pub_key];
+            NSString *ecdhKey = [LMIMHelper getECDHkeyUsePrivkey:[LKUserCenter shareCenter].currentLoginUser.prikey PublicKey:info.pub_key];
             [[RecentChatDBManager sharedManager] createNewChatWithIdentifier:info.pub_key groupChat:NO lastContentShowType:0 lastContent:[GJGCChatFriendConstans lastContentMessageWithType:message.type textMessage:message.content] ecdhKey:ecdhKey talkName:nil];
         }
         // send message

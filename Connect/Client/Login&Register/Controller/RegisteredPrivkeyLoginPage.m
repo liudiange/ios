@@ -11,7 +11,7 @@
 #import "ConnectButton.h"
 #import "LocalUserInfoView.h"
 #import "NetWorkOperationTool.h"
-#import "LMIMHelper.h"
+
 
 
 @interface RegisteredPrivkeyLoginPage () <UITextFieldDelegate>

@@ -11,6 +11,7 @@
 #import "NSString+DictionaryValue.h"
 #import "GJCFUitils.h"
 
+
 static MMAppSetting *manager = nil;
 
 @interface MMAppSetting ()
@@ -204,7 +205,7 @@ static MMAppSetting *manager = nil;
 
     NSString *login = [[NSUserDefaults standardUserDefaults] objectForKey:@"im.conect.loginuserkey"];
 //    NSString *login = [[FXKeychain defaultKeychain] objectForKey:@"im.conect.loginuserkey"];
-    if (!GJCFStringIsNull(login) &&[KeyHandle checkPrivkey:login]) {
+    if (!GJCFStringIsNull(login) &&[LMIMHelper checkPrivkey:login]) {
         self.privkey = login;
     }
     
@@ -457,7 +458,7 @@ static MMAppSetting *manager = nil;
 
 - (AccountInfo *)getLoginChainUsersByKey:(NSString *)key{
     NSArray *users = [self  getKeyChainUsers];
-    NSString *address = [KeyHandle getAddressByPrivKey:key];
+    NSString *address = [LMIMHelper getAddressByPrivKey:key];
     AccountInfo *loginUser = nil;
     for (AccountInfo *user in users) {
         if ([user.address isEqualToString:address]) {
@@ -500,7 +501,7 @@ static MMAppSetting *manager = nil;
     NSString *aad = [[NSString stringWithFormat:@"%d",arc4random() % 100 + 1000] sha1String];
     NSString *iv = [[NSString stringWithFormat:@"%d",arc4random() % 100 + 1000] sha1String];
     
-    NSDictionary *encodeDict = [KeyHandle xtalkEncodeAES_GCM:pass data:privkey aad:aad iv:iv];
+    NSDictionary *encodeDict = [LMIMHelper xtalkEncodeAES_GCM:pass data:privkey aad:aad iv:iv];
     NSString *ciphertext = [encodeDict valueForKey:@"encryptedDatastring"];
     NSString *tag = [encodeDict valueForKey:@"tagstring"];
     
@@ -531,7 +532,7 @@ static MMAppSetting *manager = nil;
     NSDictionary *dict = [encodePrivkey dictionaryValue];
     if (dict) {
         GcmDataModel *model = [GcmDataModel gcmDataWith:dict];
-        NSString *privkey = [KeyHandle xtalkDecodeAES_GCM:pass data:model.ciphertext aad:model.aad iv:model.iv tag:model.tag];
+        NSString *privkey = [LMIMHelper xtalkDecodeAES_GCM:pass data:model.ciphertext aad:model.aad iv:model.iv tag:model.tag];
         if (GJCFStringIsNull(privkey)) {
             return NO;
         }

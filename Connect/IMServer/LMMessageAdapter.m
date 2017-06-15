@@ -15,6 +15,7 @@
 #import "MessageDBManager.h"
 #import "LMConversionManager.h"
 
+
 @implementation LMMessageAdapter
 
 + (GPBMessage *)sendAdapterIMPostWithMessage:(MMMessage *)message talkType:(GJGCChatFriendTalkType)talkType ecdhKey:(NSString *)ecdhKey {
@@ -201,7 +202,7 @@
     message.sendtime = [[NSDate date] timeIntervalSince1970] * 1000;
     message.message_id = [ConnectTool generateMessageId];
     message.publicKey = msgPost.pubKey;
-    message.user_id = [KeyHandle getAddressByPubkey:message.publicKey];
+    message.user_id = [LMIMHelper getAddressByPubkey:message.publicKey];
     message.sendstatus = GJGCChatFriendSendMessageStatusSuccess;
 
     return message;

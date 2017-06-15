@@ -128,7 +128,7 @@ CREATE_SHARED_MANAGER(LMMessageSendManager)
         if (sendStatus == GJGCChatFriendSendMessageStatusSuccessUnArrive ||
                 sendStatus == GJGCChatFriendSendMessageStatusFailByNotInGroup) {
             //blocked
-        } else if (sendStatus == GJGCChatFriendSendMessageStatusFailByNoRelationShip && ![[UserDBManager sharedManager] isFriendByAddress:[KeyHandle getAddressByPubkey:messageOwer]]) {
+        } else if (sendStatus == GJGCChatFriendSendMessageStatusFailByNoRelationShip && ![[UserDBManager sharedManager] isFriendByAddress:[LMIMHelper getAddressByPubkey:messageOwer]]) {
             //no relationship
         } else {
             //update status

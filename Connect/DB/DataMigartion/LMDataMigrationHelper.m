@@ -389,7 +389,7 @@ static FMDatabaseQueue *queue;
         msgModel.ciphertext = [dict safeObjectForKey:@"request_msg_ciphertext"];
         NSString *tips = @"";
         if (!GJCFStringIsNull(msgModel.ciphertext)) {
-            NSData *data = [KeyHandle xtalkDecodeAES_GCMWithPassword:[[LKUserCenter shareCenter] getLocalGCDEcodePass] data:msgModel.ciphertext aad:msgModel.aad iv:msgModel.iv tag:msgModel.tag];
+            NSData *data = [LMIMHelper xtalkDecodeAES_GCMWithPassword:[[LKUserCenter shareCenter] getLocalGCDEcodePass] data:msgModel.ciphertext aad:msgModel.aad iv:msgModel.iv tag:msgModel.tag];
             tips = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
         }
 
@@ -466,7 +466,7 @@ static FMDatabaseQueue *queue;
                 NSString *iv = [dict safeObjectForKey:@"iv"];
                 NSString *aad = [dict safeObjectForKey:@"aad"];
                 if (!GJCFStringIsNull(tag) && !GJCFStringIsNull(iv) && !GJCFStringIsNull(aad)) {
-                    NSData *data = [KeyHandle xtalkDecodeAES_GCMWithPassword:[[LKUserCenter shareCenter] getLocalGCDEcodePass] data:ciphertext aad:aad iv:iv tag:tag];
+                    NSData *data = [LMIMHelper xtalkDecodeAES_GCMWithPassword:[[LKUserCenter shareCenter] getLocalGCDEcodePass] data:ciphertext aad:aad iv:iv tag:tag];
                     detailBill = [Crowdfunding parseFromData:data error:&error];
                 }
 

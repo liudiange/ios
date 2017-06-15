@@ -926,8 +926,8 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                     NSArray *array = [groupInfo.ecdh componentsSeparatedByString:@"/"];
                     if (array.count == 2) {
                         NSString *randomPublickey = [array objectAtIndexCheck:0];
-                        NSData *ecdhKey = [KeyHandle getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey publicKey:randomPublickey];
-                        ecdhKey = [KeyHandle getAes256KeyByECDHKeyAndSalt:ecdhKey salt:[ConnectTool get64ZeroData]];
+                        NSData *ecdhKey = [LMIMHelper getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey publicKey:randomPublickey];
+                        ecdhKey = [LMIMHelper getAes256KeyByECDHKeyAndSalt:ecdhKey salt:[ConnectTool get64ZeroData]];
                         GcmData *ecdhKeyGcmData = [GcmData parseFromData:[StringTool hexStringToData:[array objectAtIndexCheck:1]] error:nil];
                         NSData *ecdh = [ConnectTool decodeGcmDataWithEcdhKey:ecdhKey GcmData:ecdhKeyGcmData haveStructData:NO];
                         groupKey = [[NSString alloc] initWithData:ecdh encoding:NSUTF8StringEncoding];

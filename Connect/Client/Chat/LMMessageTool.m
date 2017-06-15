@@ -343,7 +343,7 @@
                 BOOL isNoted = [[temD valueForKey:@"newaccept"] boolValue];
                 NSString *groupId = [temD valueForKey:@"identifier"];
                 NSString *applyUserPubkey = [temD valueForKey:@"pubKey"];
-                BOOL userIsInGroup = [[GroupDBManager sharedManager] userWithAddress:[KeyHandle getAddressByPubkey:applyUserPubkey] isinGroup:groupId];
+                BOOL userIsInGroup = [[GroupDBManager sharedManager] userWithAddress:[LMIMHelper getAddressByPubkey:applyUserPubkey] isinGroup:groupId];
                 if (userIsInGroup) {
                     chatContentModel.statusMessageString = [GJGCChatSystemNotiCellStyle formateCellStatusWithHandle:YES refused:NO isNoted:isNoted];
                 } else{

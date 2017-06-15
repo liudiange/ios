@@ -218,7 +218,7 @@
 
 - (void)trasferWithMoney:(NSString *)money hashId:(NSString *)hashId {
 
-    NSString *ecdhKey = [KeyHandle getECDHkeyUsePrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey PublicKey:self.user.pub_key];
+    NSString *ecdhKey = [LMIMHelper getECDHkeyUsePrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey PublicKey:self.user.pub_key];
 
     MMMessage *message = [[MessageDBManager sharedManager] createTransactionMessageWithUserInfo:self.user hashId:hashId monney:money];
     // creat session

@@ -11,7 +11,7 @@
 #import "NSData+Hash.h"
 #import "MMMessage.h"
 #import "LMHistoryCacheManager.h"
-#import "LMIMHelper.h"
+
 
 @implementation ConnectTool
 

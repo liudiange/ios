@@ -162,7 +162,7 @@ unsigned char strToChar (char a, char b)
  */
 +(NSString*)getSystemUrl
 {
-    NSData *randomData = [KeyHandle createRandom512bits];
+    NSData *randomData = [LMIMHelper createRandom512bits];
     return [self hexStringFromData:randomData];
 }
 

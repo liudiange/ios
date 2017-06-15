@@ -10,6 +10,7 @@
 #import <UIKit/UIKit.h>
 #import "FXKeychain.h"
 
+
 static NSString *kUDIDValue = nil;
 static NSString *const kKeychainUDIDItemIdentifier  = @"UDID";   /* Replace with your own UDID identifier */
 
@@ -35,7 +36,7 @@ static NSString *const kKeychainUDIDItemIdentifier  = @"UDID";   /* Replace with
  *  get identifierForVendor String
  */
 + (NSString *)getIDFVString {
-    return [KeyHandle creatNewPrivkey].sha256String;
+    return [LMIMHelper creatNewPrivkey].sha256String;
 }
 
 @end

@@ -75,7 +75,7 @@ CREATE_SHARED_MANAGER(LMRetweetMessageManager)
         if ([[user.pub_key uppercaseString] isEqualToString:@"CONNECT"]) {
             chatType = GJGCChatFriendTalkTypePostSystem;
         } else{
-            ecdhKey = [KeyHandle getECDHkeyUsePrivkey:[[LKUserCenter shareCenter] currentLoginUser].pub_key PublicKey:message.publicKey];
+            ecdhKey = [LMIMHelper getECDHkeyUsePrivkey:[[LKUserCenter shareCenter] currentLoginUser].pub_key PublicKey:message.publicKey];
         }
     }
     
@@ -143,10 +143,10 @@ CREATE_SHARED_MANAGER(LMRetweetMessageManager)
                         if (chatType == GJGCChatFriendTalkTypeGroup) {
                             ecdhkey = [StringTool hexStringToData:ecdhKey];
                         } else if(chatType == GJGCChatFriendTalkTypePrivate){
-                            ecdhkey = [KeyHandle getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey
+                            ecdhkey = [LMIMHelper getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey
                                                              publicKey:message.publicKey];
                         }
-                        ecdhkey = [KeyHandle getAes256KeyByECDHKeyAndSalt:ecdhkey salt:[ConnectTool get64ZeroData]];
+                        ecdhkey = [LMIMHelper getAes256KeyByECDHKeyAndSalt:ecdhkey salt:[ConnectTool get64ZeroData]];
                         GcmData *thumbGcmdata = [ConnectTool createGcmDataWithStructDataEcdhkey:ecdhkey data:uploadThumbData aad:nil];
                         GcmData *iamgeGcmdata = [ConnectTool createGcmDataWithStructDataEcdhkey:ecdhkey data:uploadImageData aad:nil];
                         
@@ -175,10 +175,10 @@ CREATE_SHARED_MANAGER(LMRetweetMessageManager)
                         if (chatType == GJGCChatFriendTalkTypeGroup) {
                             ecdhkey = [StringTool hexStringToData:ecdhKey];
                         } else if(chatType == GJGCChatFriendTalkTypePrivate){
-                            ecdhkey = [KeyHandle getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey
+                            ecdhkey = [LMIMHelper getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey
                                                              publicKey:message.publicKey];
                         }
-                        ecdhkey = [KeyHandle getAes256KeyByECDHKeyAndSalt:ecdhkey salt:[ConnectTool get64ZeroData]];
+                        ecdhkey = [LMIMHelper getAes256KeyByECDHKeyAndSalt:ecdhkey salt:[ConnectTool get64ZeroData]];
                         GcmData *gcmData = [ConnectTool createGcmDataWithStructDataEcdhkey:ecdhkey data:videoCoverData aad:nil];
                         GcmData *videoGcmData = [ConnectTool createGcmDataWithStructDataEcdhkey:ecdhkey data:videoData aad:nil];
                         

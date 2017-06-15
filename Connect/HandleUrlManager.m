@@ -47,7 +47,7 @@
             case UrlTypeFriend: {
                 
                 NSString *address = [parms valueForKey:@"address"];
-                if ([KeyHandle checkAddress:address]) {
+                if ([LMIMHelper checkAddress:address]) {
                     AccountInfo *user = [[UserDBManager sharedManager] getUserByAddress:address];
                     if (!user.stranger) {
                         UserDetailPage *page = [[UserDetailPage alloc] initWithUser:user];
@@ -103,7 +103,7 @@
                     decimalAmount = [NSDecimalNumber decimalNumberWithString:[parms valueForKey:@"amount"]];
                 }
                 
-                if (GJCFStringIsNull(address) || ![KeyHandle checkAddress:address]) {
+                if (GJCFStringIsNull(address) || ![LMIMHelper checkAddress:address]) {
                     return;
                 }
                 
