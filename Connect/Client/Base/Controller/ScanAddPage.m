@@ -58,7 +58,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.view.backgroundColor = XCColor(22, 26, 33);
+    self.view.backgroundColor = LMBasicBlack;
 
     UILabel *titleLabel = [UILabel new];
     [self.view addSubview:titleLabel];
@@ -394,7 +394,7 @@
         _myCodeView = [[UIControl alloc] init];
         _myCodeView.layer.cornerRadius = 5;
         _myCodeView.layer.masksToBounds = YES;
-        _myCodeView.backgroundColor = XCColor(43, 254, 192);
+        _myCodeView.backgroundColor = LMBasicScanBackColor;
 
         UISwipeGestureRecognizer *swipeGestuer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipeMycode:)];
         swipeGestuer.direction = UISwipeGestureRecognizerDirectionUp | UISwipeGestureRecognizerDirectionDown;

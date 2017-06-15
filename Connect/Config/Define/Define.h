@@ -88,14 +88,6 @@ selector:_selector name:_name object:nil];
 #define DEVICE_SIZE [UIScreen mainScreen].bounds.size
 #define NEWIPHONE6P (DEVICE_SIZE.width > 390 && DEVICE_SIZE.width < 440)
 
-#pragma mark - color
-
-#define XCColor(r, g, b)         [UIColor colorWithRed:(r) / 255.f green:(g) / 255.f blue:(b) / 255.f alpha:1.f]
-#define XCColorAlpha(r, g, b, a)         [UIColor colorWithRed:(r) / 255.f green:(g) / 255.f blue:(b) / 255.f alpha:(a)*1.f]
-
-#define XCWhiteColor XCColor(255,255,255)
-#define XCBlackColor XCColor(0,0,0)
-
 #define NetWorkCaches @"Library/Caches/NetWorkToolCaches"
 
 #define CREATE_SHARED_MANAGER(CLASS_NAME) \

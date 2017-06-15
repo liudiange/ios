@@ -24,7 +24,7 @@
 
     self.title = LMLocalizedString(@"Set Pattern Password", nil);
 
-    self.view.backgroundColor = XCColor(241, 241, 241);
+    self.view.backgroundColor = LMBasicBackgroudGray;
 
 }
 

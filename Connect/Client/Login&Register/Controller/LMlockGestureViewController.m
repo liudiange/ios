@@ -39,7 +39,7 @@
 #pragma mark - system methods
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.view.backgroundColor = XCColor(241, 241, 241);
+    self.view.backgroundColor = LMBasicBackgroudGray;
     
     NSTimeInterval erroTime = [[MMAppSetting sharedSetting] getLastErroGestureTime];
     if (erroTime > 0) {
@@ -170,7 +170,7 @@
     
     GestureLockView *lockView = [[GestureLockView alloc] initWithFrame:CGRectMake(0, tipLabel.bottom + AUTO_HEIGHT(96), AUTO_WIDTH(538), AUTO_HEIGHT(538))];
     lockView.centerX = self.view.centerX;
-    lockView.backgroundColor = XCColor(241, 241, 241);
+    lockView.backgroundColor = LMBasicBackgroudGray;
     lockView.delegate = self;
     [self.view addSubview:lockView];
     self.gestureLockView = lockView;

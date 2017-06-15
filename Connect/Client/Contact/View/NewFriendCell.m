@@ -54,9 +54,8 @@
     
     self.layoutMargins = UIEdgeInsetsZero;
     self.separatorInset = UIEdgeInsetsZero;
-    
-    [_addButton setBackgroundImage:[UIImage imageWithColor:XCColor(55, 198, 92)] forState:UIControlStateNormal];
-    [_addButton setBackgroundImage:[UIImage imageWithColor:XCColor(242, 242, 242)] forState:UIControlStateDisabled];
+    [_addButton setBackgroundImage:[UIImage imageWithColor:LMBasicTagTitleSelectColor] forState:UIControlStateNormal];
+    [_addButton setBackgroundImage:[UIImage imageWithColor:LMBasicBackgroudGray] forState:UIControlStateDisabled];
     [_addButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
 
 }

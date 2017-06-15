@@ -54,7 +54,7 @@ typedef NS_ENUM(NSInteger, ScanMoneyType) {
 - (void)viewDidLoad {
     [super viewDidLoad];
     _isFirstBecome = YES;
-    self.view.backgroundColor = XCColor(22, 26, 33);
+    self.view.backgroundColor = LMBasicBlack;
     [self creatQRView];
     [self beginScanning];
     [self setNavigationRightWithTitle:LMLocalizedString(@"Chat Album", nil)];

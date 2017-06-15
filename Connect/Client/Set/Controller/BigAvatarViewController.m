@@ -29,7 +29,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    self.view.backgroundColor = XCColor(22, 26, 33);
+    self.view.backgroundColor = LMBasicBlack;
 
     UIImageView *bigAvatarImageView = [[UIImageView alloc] init];
     self.bigAvatarImageView = bigAvatarImageView;

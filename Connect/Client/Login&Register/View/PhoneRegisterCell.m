@@ -43,8 +43,8 @@
     self.nickNameLabel.font = [UIFont systemFontOfSize:FONT_SIZE(24)];
     self.addButton.titleLabel.font = [UIFont systemFontOfSize:FONT_SIZE(24)];
     _addButton.userInteractionEnabled = NO;
-    [_addButton setBackgroundImage:[UIImage imageWithColor:XCColor(69, 69, 216)] forState:UIControlStateNormal];
-    [_addButton setBackgroundImage:[UIImage imageWithColor:XCColor(242, 242, 242)] forState:UIControlStateDisabled];
+    [_addButton setBackgroundImage:[UIImage imageWithColor:LMBasicBtnImageColor] forState:UIControlStateNormal];
+    [_addButton setBackgroundImage:[UIImage imageWithColor:LMBasicBackgroudGray] forState:UIControlStateDisabled];
     [_addButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
 }
 

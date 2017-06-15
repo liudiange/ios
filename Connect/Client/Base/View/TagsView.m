@@ -32,8 +32,8 @@
 - (void)setup{
     self.layer.cornerRadius = 5;
     self.layer.masksToBounds = YES;
-    [self setBackgroundColor:XCColor(242, 242, 242)];
-    [self setTitleColor:XCColor(102, 95, 100) forState:UIControlStateNormal];
+    [self setBackgroundColor:LMBasicBackgroudGray];
+    [self setTitleColor:LMBasicTagTitleNormalColor forState:UIControlStateNormal];
     
     self.titleLabel.font = [UIFont systemFontOfSize:FONT_SIZE(24)];
 
@@ -42,9 +42,9 @@
 -(void)setSelected:(BOOL)selected{
     [super setSelected:selected];
     if (selected) {
-        [self setTitleColor:XCColor(55, 198, 92) forState:UIControlStateSelected];
+        [self setTitleColor:LMBasicTagTitleSelectColor forState:UIControlStateSelected];
     } else {
-        [self setTitleColor:XCColor(102, 95, 100) forState:UIControlStateNormal];
+        [self setTitleColor:LMBasicTagTitleNormalColor forState:UIControlStateNormal];
     }
     [self setNeedsDisplay];
 }
@@ -358,7 +358,7 @@
         UIButton *tagButton = [UIButton new];
         tagButton.titleLabel.font = [UIFont systemFontOfSize:FONT_SIZE(24)];
         tagButton.tag = i;
-        [tagButton setTitleColor:XCColor(55, 198, 92) forState:UIControlStateNormal];
+        [tagButton setTitleColor:LMBasicTagTitleSelectColor forState:UIControlStateNormal];
         tagButton.layer.borderWidth = 0.6;
         tagButton.layer.borderColor = GJCFQuickHexColor(@"F2F2F2").CGColor;
         tagButton.layer.cornerRadius = 5;

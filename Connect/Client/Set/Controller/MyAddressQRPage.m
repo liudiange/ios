@@ -39,7 +39,7 @@
 
     self.title = LMLocalizedString(@"Set My QR code", nil);
 
-    self.view.backgroundColor = XCColor(22, 26, 33);
+    self.view.backgroundColor = LMBasicBlack;
 
 
     [self.view addSubview:self.myCodeView];
@@ -60,7 +60,7 @@
         _myCodeView = [[UIControl alloc] init];
         _myCodeView.layer.cornerRadius = 5;
         _myCodeView.layer.masksToBounds = YES;
-        _myCodeView.backgroundColor = XCColor(43, 254, 192);
+        _myCodeView.backgroundColor = LMBasicScanBackColor;
 
         _codeImageView = [UIImageView new];
         _codeImageView.image = [BarCodeTool barCodeImageWithString:self.user.address withSize:200];

@@ -105,7 +105,7 @@
     self.contentScrollView.delegate = self;
     [self addSubview:self.contentScrollView];
 
-    self.contentScrollView.backgroundColor = XCColor(205, 208, 212);
+    self.contentScrollView.backgroundColor = LMBasicMiddleGray;
 
 
     self.pageControl = [[UIPageControl alloc] init];

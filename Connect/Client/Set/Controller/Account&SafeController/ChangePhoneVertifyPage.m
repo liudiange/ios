@@ -66,7 +66,7 @@ typedef NS_ENUM(NSInteger, BottonAction) {
 
     [super viewDidLoad];
     self.title = LMLocalizedString(@"Set Change Mobile", nil);
-    self.view.backgroundColor = XCColor(241, 241, 241);
+    self.view.backgroundColor = LMBasicBackgroudGray;
     if (count == kMaxCountTime) {
         [self sendCodeWithType:1];
     }
