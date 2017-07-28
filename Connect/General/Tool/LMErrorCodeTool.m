@@ -583,6 +583,12 @@
             
         }
             break;
+        case PASSWPRD_ERROR_136:
+        {
+            return LMLocalizedString(@"Login Password incorrect", nil);
+            
+        }
+            break;
         case ErrorCodeType1001:
         {
             return NO_TRANSATION_HISTORY_1001;
